@@ -7,3 +7,9 @@ Learn more about ABI and CVR here
 http://chilloutvr.de/
 
 https://docs.abinteractive.net/
+
+
+
+
+A Project by the "Unofficial CVR Community"
+feel free to join us on Discord: https://discord.gg/yApCk5atsa
