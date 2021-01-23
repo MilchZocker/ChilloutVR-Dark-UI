@@ -50,7 +50,7 @@ h1 {
 
     box-sizing: border-box;
     border: 3px solid #FFFFFF;
-	
+
     background-image: url(background.png);
     background-color: rgba(0, 0, 0, 0.95);
 	background-size: cover;	
@@ -239,6 +239,10 @@ h1 {
     bottom: 0.5em;
 }
 
+.content-btn.zero {
+    bottom: 5.5em;
+}
+
 .content-btn.disabled {
     background-color: rgb(60, 60, 60) !important;
 }
@@ -305,10 +309,6 @@ h1 {
 
     border-radius: 0.25em;
     border: 3px solid #FFFFFF;
-
-    background-image: url(https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/main/news!.png);
-    background-color: rgba(0, 0, 0, 0.1);
-	background-size: cover;	
 }
 
 .content-news {
@@ -1241,7 +1241,7 @@ h1 {
     box-sizing: border-box;
     border: 3px solid #FFFFFF;
 
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(128, 128, 128, 0.8);
 
     display: flex;
 }
@@ -1856,6 +1856,11 @@ h1 {
 }
 
 .content-news .action-btn {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.content-feed .action-btn {
     padding: 40px 0;
     text-align: center;
 }
