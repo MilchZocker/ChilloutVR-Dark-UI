@@ -324,9 +324,21 @@ h1 {
 
     border-radius: 0.25em;
     border: 3px solid #FFFFFF;
+}
+
+.content-feed-news {
+    position: absolute;
+    top: 27%;
+    width: 48%;
+    padding: 1%;
+    height: 41%;
+    left: 26%;
+
+    border-radius: 0.25em;
+    border: 3px solid #FFFFFF;
     background-image: url(https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/main/news!.png);
-    background-color: rgba(0, 0, 0, 0.95);
-	background-size: cover;	
+    background-color: rgba(0, 0, 0, 0.2);
+	background-size: cover;
 }
 
 .content-news {
