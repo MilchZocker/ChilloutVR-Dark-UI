@@ -4,7 +4,7 @@
 
 set config_download_unhollower=true
 
-:: CODE
+:: Installer
 
 CLS
 
@@ -20,12 +20,14 @@ echo ^    --------------------------------------------------
 echo ^    ^|  ChilloutVR Dark UI by UCC installer    ^|
 echo:
 
+:: Is ChilloutVR Folder?
+
 echo [33m---------------------- Pre-Setup -----------------------[0m
 
 IF NOT exist "ChilloutVR_Data" (
 	echo [31m
 	echo It seems that this folder isn't the ChilloutVR Game Folder.
-
+)
 SET choice=
 SET /p choice=Should we Search for the ChilloutVR Folder? That Could Take a Long Time you should move this installer into the ChilloutVR Folder if you dont want to wait. [N][Y]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
@@ -36,12 +38,18 @@ IF '%choice%'=='n' GOTO no
 IF '%choice%'=='' GOTO no
 )
 
-cd /d "ChilloutVR_Data\StreamingAssets\Cohtml\UIResources"
+:: Go to "UIResources"
+
 :skip
+cd /d "ChilloutVR_Data\StreamingAssets\Cohtml\UIResources"
+
+:: Download 7zip.
+
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
-powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.dll -OutFile 7z.dll"
 echo:
+
+:: Download UI Experimental from Github.
 
 echo [33m----------------- Custome UI ------------------[0m
 
@@ -54,6 +62,8 @@ if %errorlevel% neq 0 (
 	echo [0m
 	pause
 	exit /b %errorlevel%
+   )
+:: Decompress .zip.
 )
 echo Decompressing UI...
 powershell Expand-Archive UI.zip -DestinationPath . -Force
@@ -64,21 +74,28 @@ if %errorlevel% neq 0 (
 	echo [0m
 	pause
 	exit /b %errorlevel%
+   )
+:: Delete .zip.
 )	
 del UI.zip
+   )
+:: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
 move /Y "ChillouVR-Dark-UI-Experimental\ui.css" "CVRTest"
 move /Y "ChillouVR-Dark-UI-Experimental\index.html" "CVRTest"
 move /-Y "ChillouVR-Dark-UI-Experimental\background.png" "CVRTest"
+   )
+:: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-del /Q /F 7z.dll
 del /Q /F "ChillouVR-Dark-UI-Experimental\README.md"
 del /Q /F "ChillouVR-Dark-UI-Experimental\LICENSE"
 del /Q /F "ChillouVR-Dark-UI-Experimental\news!.png"
 rmdir /Q /S "ChillouVR-Dark-UI-Experimental"
+   )
+:: Installation Finished.
 )
 echo:
 echo:
@@ -89,17 +106,37 @@ echo ^    --------------------------------------------------
 echo [0m
 echo:
 echo:
+pause
+exit
+   )
+:: no variable.
 )
 :no
 pause
 Exit
-
+   )
+:: yes variable.
 )
 :yes
-for /r \ %%a in (ChilloutVR) do set "location=%%~dpa"
-GOTO found
+
+SET filename=ChilloutVR.exe
+
+ECHO Looking for ChilloutVR please wait..
+
+FOR /R \ %%a IN (\) DO (
+   IF EXIST "%%a\%filename%" (
+
+      SET fullpath=%%a
+      SET fullpathexe=%%a%filename%	  
+      GOTO FoundIt
+   )
 )
-:found
-cd /d "%%~dpa"
+:: FoundIt variable.
+)
+:FoundIt
+ECHO thats your ChilloutVR Path: %fullpathexe%
+ECHO We will now Continue the Installation...
+pause
+cd /d "%fullpath%"
 GOTO skip
 )
