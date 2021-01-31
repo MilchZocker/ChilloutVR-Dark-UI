@@ -27,7 +27,7 @@ echo [33m---------------------- Pre-Setup -----------------------[0m
 IF NOT exist "ChilloutVR_Data" (
 	echo [31m
 	echo It seems that this folder isn't the ChilloutVR Game Folder.
-)
+
 SET choice=
 SET /p choice=Should we Search for the ChilloutVR Folder? That Could Take a Long Time you should move this installer into the ChilloutVR Folder if you dont want to wait. [N][Y]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
