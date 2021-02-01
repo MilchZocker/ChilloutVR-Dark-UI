@@ -41,7 +41,7 @@ echo [33m---------------------- Select Custome UI Typ -----------------------[
 :: Selection of UI's
 
 SET choice=
-SET /p choice=Which Version do you want to Install?. 1: MilchZockers [M] or 2: Slime's [S]: 
+SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] or 2: Slime's [S]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='M' GOTO MilchZockers
 IF '%choice%'=='m' GOTO MilchZockers
