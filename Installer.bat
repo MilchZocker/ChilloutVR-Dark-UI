@@ -81,17 +81,29 @@ exit
 )
 :Experimental-MilchZocker
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat
+goto CleanUP
 exit
 )
 :Stable-MilchZocker
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStable.bat
+goto CleanUP
 exit
 )
 :Experimental-Slime
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalSlime.bat
+goto CleanUP
 exit
 )
 :Stable-Slime
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableSlime.bat
+goto CleanUP
 exit
 )
+
+
+:CleanUP
+)
+echo [33m-------------------- Final Cleanup ---------------------[0m
+del /Q /F 7z.exe
+)
+exit
