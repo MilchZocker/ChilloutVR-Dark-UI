@@ -52,7 +52,7 @@ echo:
 
 :: Download Slime-UI Stable from Github.
 
-echo [33m----------------- Custome UI ------------------[0m
+echo [33m----------------- Custom UI ------------------[0m
 
 echo Downloading newest UI from github...
 powershell -Command "Invoke-WebRequest https://codeload.github.com/Slime-Senpai/SlimyCVRUI/zip/stable -OutFile UI.zip"
