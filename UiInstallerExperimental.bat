@@ -30,6 +30,8 @@ IF NOT exist "ChilloutVR_Data" (
 
 SET choice=
 SET /p choice=Should we Search for the ChilloutVR Folder? That Could Take a Long Time you should move this installer into the ChilloutVR Folder if you dont want to wait. [N][Y]: 
+)
+IF NOT exist "ChilloutVR_Data" (
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='Y' GOTO yes
 IF '%choice%'=='y' GOTO yes
@@ -37,7 +39,6 @@ IF '%choice%'=='N' GOTO no
 IF '%choice%'=='n' GOTO no
 IF '%choice%'=='' GOTO no
 )
-
 :: Go to "UIResources"
 
 :skip
