@@ -102,7 +102,7 @@ echo:
 echo:
 echo [32m
 echo ^    --------------------------------------------------
-echo ^    ^|         Custome UI is now Installed!          ^|
+echo ^    ^|         Custom UI is now Installed!          ^|
 echo ^    --------------------------------------------------
 echo [0m
 echo:
