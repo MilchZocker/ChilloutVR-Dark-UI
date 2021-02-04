@@ -36,7 +36,7 @@ if %errorlevel% neq 0 (
 )	
 del Installers.zip
 )
-echo [33m---------------------- Select Custome UI Typ -----------------------[0m
+echo [33m---------------------- Select Custom UI Typ -----------------------[0m
 )
 :: Selection of UI's
 
