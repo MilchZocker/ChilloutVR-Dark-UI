@@ -9,7 +9,7 @@
         <div class="wrapper">
 
             <div id="home" class="content in">
-                <h1>Good to see you ^^</h1>
+                <h1>GOOD TO SEE YOU ^^</h1>
 
                 <div class="content-shortcuts">
                     <div class="content-caption">Shortcuts</div>
@@ -17,9 +17,12 @@
                         <div onclick="toggleMic();" class="action-btn action-mute">
                             <img src="gfx/mute.svg">
                             Unmute</div>
-                        <div onclick="toogleSeatedPlay();" class="action-btn">
+                        <div id="seatedPlayBtnHome" onclick="toogleSeatedPlay();" class="action-btn">
                             <img src="gfx/seated-play.svg">
                             Seated</div>
+                        <!--<div id="recalibrateBtnHome" onclick="recalibrate();" class="action-btn">
+                            <img src="gfx/recalibrate.svg">
+                            Recalib</div>-->
                         <div onclick="toggleFlight();" class="action-btn">
                             <img src="gfx/jetpack.svg">
                             Flight</div>
@@ -62,14 +65,29 @@
                         <div class="cell-name">Version: </div>
                         <div class="cell-value game-debug-version">[Version]</div>
                     </div>
-                    <div class="row-wrapper">UI made for "2021r158p3" </div>								
+                    <div class="row-wrapper">UI made for "2021r159 Release" </div>								
                 </div>
 
                 <div class="content-feed">
-                    <div class="content-caption">Feed</div>
+                    <div class="content-caption">News</div>
+                    <p style="margin:0;">Thank you for playing ChilloutVR in early access.</p>
+                    <p style="margin:0;">We are actively working on improvements regarding game-server and api stability as well as user-experience.</p>
+                    <p style="margin:0;">Please mail us your feedback and ideas (especially regarding the UI) to team@abinteractive.net.</p>
+                    <p style="margin:0;">CVR Dark UI by UCC on version 2021r159 Release.		
                 </div>
 
-                <div class="content-news">
+                <div class="content-avatar-functions">
+                    <div class="content-caption">Emotes</div>
+                    <div class="btn-row-wrapper actions">
+                        <div class="action-btn" onclick="playEmote(1);">1</div>
+                        <div class="action-btn" onclick="playEmote(2);">2</div>
+                        <div class="action-btn" onclick="playEmote(3);">3</div>
+                        <div class="action-btn" onclick="playEmote(4);">4</div>
+                        <div class="action-btn" onclick="playEmote(5);">5</div>
+                        <div class="action-btn" onclick="playEmote(6);">6</div>
+                        <div class="action-btn" onclick="playEmote(7);">7</div>
+                        <div class="action-btn" onclick="playEmote(8);">8</div>
+                    </div>
                     <div class="content-caption">Toggle States (current Avatar)</div>
                     <div class="btn-row-wrapper actions">
                         <div class="action-btn" onclick="changeState(0);">Default</div>
@@ -83,8 +101,21 @@
                     </div>
                 </div>
 
-                <div class="content-friends">
-                    <div class="content-caption">Online Friends</div>
+                <div class="content-panic">
+                    <div class="content-caption">Actions</div>
+                    <div class="btn-row-wrapper actions">
+                        <div class="action-btn" onclick="ShowCurrentInstanceDetails();"><img src="gfx/compass.svg">Current Instance</div>
+                        <div class="action-btn" onclick="RemovePlayerAvatars();"><img src="gfx/nav-avatars.svg">Remove All Avatars</div>
+                        <div class="action-btn" onclick="recalibrate()"><img src="gfx/recalibrate.svg">Recalibrate</div>
+                    </div>
+                </div>
+
+                <div class="content-call">
+                    <div class="content-caption">Call</div>
+                    <img class="call-profile" src="">
+                    <div class="call-name">No ongoing call</div>
+                    <div class="call-duration">&nbsp;</div>
+                    <div class="call-actions"></div>
                 </div>
             </div>
 
@@ -147,6 +178,8 @@
                     <div class="scroll-content">
                         <div class="filter-content"></div>
                     </div>
+                    <div class="content-btn color-secondary neg-one" onclick="DeletePropMode();">Enter Delete Mode</div>
+                    <div class="content-btn color-secondary zero" onclick="deleteAllMyProps();">Delete All My Props</div>
                     <div class="content-btn first" onclick="filterContent('props', '');">Reset Filters</div>
                     <div class="content-btn color-primary second" onclick="refreshProps();">Refresh</div>
                 </div>
@@ -211,22 +244,25 @@
             <div id="settings" class="content hidden">
                 <div class="list-filter">
                     <h1>Settings</h1>
-                    <div class="scroll-content">
+                    <div class="scroll-content" style="top: 4em; bottom: 3em;">
                         <div class="filter-content">
                             <div class="filter-option active" onclick="switchSettingCategorie('settings-general', this)">General</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-graphics', this)">Graphics</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-audio', this)">Audio</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-input', this)">Input & Key-Bindings</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-filter', this)">Content filter</div>
+                            <div class="filter-option" onclick="switchSettingCategorie('settings-props', this)">Prop Settings</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-interaction', this)">Interactions</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-implementation', this)">Implementation</div>
+                            <div class="filter-option" onclick="switchSettingCategorie('settings-experimental', this)">experimental</div>
                             <!--<div class="filter-option" onclick="switchSettingCategorie('settings-cache', this)">Cache management</div>-->
                         </div>
                     </div>
-                    <!--<div class="content-btn first" onclick="saveSettings();">Save</div>-->
+                    <div class="content-btn first" onclick="ReloadAllAvatars();">Reload Avatars</div>
                     <div class="content-btn color-primary second" onclick="settingsReset();">Reset Settings</div>
                 </div>
                 <div class="list-content">
+                    
                     <div id="settings-general" class="settings-categorie active">
                         <div class="row-wrapper">
                             <div class="option-caption">Player Height in cm:</div>
@@ -263,7 +299,7 @@
                         <div class="row-wrapper">
                             <div class="option-caption">Show Image on Nameplates:</div>
                             <div class="option-input">
-                                <div id="GeneralShowNameplatesImage" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                                <div id="GeneralNameplatesImageVisibility" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
                             </div>
                         </div>
                         <div class="row-wrapper">
@@ -284,9 +320,38 @@
                                 <div id="GeneralClockFormat" class="inp_dropdown" data-options="24:24h,12:12h" data-current="24" data-saveOnChange="true"></div>
                             </div>
                         </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Running Animation in FBT:</div>
+                            <div class="option-input">
+                                <div id="GeneralEnableRunningAnimationFullBody" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Portal safe distance in cm:</div>
+                            <div class="option-input">
+                                <div id="GeneralPortalSafeDistance" class="inp_slider" data-min="100" data-max="500" data-current="3" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="content-btn" onclick="logout();">Logout</div>
                     </div>
 
                     <div id="settings-graphics" class="settings-categorie">
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Fullscreen:</div>
+                            <div class="option-input">
+                                <div id="GraphicsFullscreen" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Resolution:</div>
+                            <div class="option-input">
+                                <div id="GraphicsResolutionPresets" class="inp_dropdown" data-options="1920x1080,1366x768,1440x900,1536x864,2560x1440" data-current="1920x1080" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        
                         <div class="row-wrapper">
                             <div class="option-caption">Framerate Target:</div>
                             <div class="option-input">
@@ -329,6 +394,8 @@
                                 <div id="GraphicsVSync" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
                             </div>
                         </div>
+
+                        <div style="width: 10px; height: 200px;"></div>
                     </div>
 
                     <div id="settings-audio" class="settings-categorie">
@@ -368,19 +435,29 @@
                               <div id="AudioUi" class="inp_slider" data-min="0" data-max="100" data-current="100" data-saveOnChange="true" data-continuousUpdate="true"></div>
                             </div>
                         </div>
-
-                        <!--<div class="row-wrapper">
-                            <div class="option-caption">Microphone VR:</div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Props:</div>
                             <div class="option-input">
-                                <div id="AudioMicVr" class="inp_dropdown" data-options="" data-current="" data-saveOnChange="true"></div>
+                                <div id="AudioProp" class="inp_slider" data-min="0" data-max="100" data-current="100" data-saveOnChange="true" data-continuousUpdate="true"></div>
                             </div>
                         </div>
+
                         <div class="row-wrapper">
-                            <div class="option-caption">Microphone Desktop:</div>
+                            <div class="option-caption">Microphone Input:</div>
                             <div class="option-input">
-                                <div id="AudioMicDesctop" class="inp_dropdown" data-options="" data-current="" data-saveOnChange="true"></div>
+                                <div id="AudioInputDevice" class="inp_dropdown" data-options="Default" data-current="" data-saveOnChange="true"></div>
                             </div>
-                        </div>-->
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Microphone Threshold:</div>
+                            <div class="option-input">
+                                <div id="AudioInputThreshold" class="inp_slider" data-min="0" data-max="100" data-current="10" data-saveOnChange="true" data-continuousUpdate="true"></div>
+                            </div>
+                        </div>
+
+                        <div style="width: 10px; height: 200px;"></div>
+                        
                     </div>
 
                     <div id="settings-input" class="settings-categorie">
@@ -549,11 +626,162 @@
                         
                     </div>
 
+                    <div id="settings-props" class="settings-categorie">
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Props:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsEnabled" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        
+                        <h2 style="margin-bottom: 0;">Tag based Prop blocking</h2>
+                        <p>This options will lead to the whole Prop to be blocked</p>
+
+                        <div id="content-filter-nsfw-wrapper-props" style="display: none;">
+                            <div class="row-wrapper">
+                                <div class="option-caption">Enable NSFW Content:</div>
+                                <div class="option-input">
+                                    <div id="ContentFilterPropsNSFW" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Flashing Colors:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsFlashingColors" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Flashing Lights:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsFlashingLights" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Screen Effects:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsScreenEffects" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div id="content-filter-nsfw-wrapper-second-props" style="display: none;">
+                            <div class="row-wrapper">
+                                <div class="option-caption">Violence:</div>
+                                <div class="option-input">
+                                    <div id="ContentFilterPropsViolence" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                                </div>
+                            </div>
+
+                            <div class="row-wrapper">
+                                <div class="option-caption">Gore, Death, Cruelty:</div>
+                                <div class="option-input">
+                                    <div id="ContentFilterPropsGore" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Excessively huge:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsExcessivelyHuge" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Excessively small:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsExcessivelySmall" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <h2 style="margin-bottom: 0;">Removables</h2>
+                        <p>This options will remove components from the avatar</p>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Loud Audio:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsLoudAudio" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Long Range Audio:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsLongRangeAudio" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Particle Systems:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsParticleSystems" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Dynamic Bones:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsDynamicBone" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Dynamic Bone Collider:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsDynamicBoneCollision" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Cameras:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsCameras" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Windzones:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsWindZones" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <h2>Prop Physics Intercollision</h2>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Particle Collision:</div>
+                            <div class="option-input">
+                                <div id="InteractionPropsPhysicsCollisionEnabled" class="inp_dropdown" data-options="0:Disable,1:Enable for friends,2:Enable" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Colliders:</div>
+                            <div class="option-input">
+                                <div id="InteractionPropsPhysicsCollidersEnabled" class="inp_dropdown" data-options="0:Disable,1:Enable for friends,2:Enable" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <h2>Prop Animator Triggers Interaction</h2>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Touch Triggers:</div>
+                            <div class="option-input">
+                                <div id="InteractionPropsAnimatorTriggersEnabled" class="inp_dropdown" data-options="0:Disable,1:Enable for friends,2:Enable" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div style="width: 10px; height: 200px;"></div>
+
+                    </div>
+
                     <div id="settings-interaction" class="settings-categorie">
-                        <h2 style="margin-bottom: 0;">Dynamic Bone Intercollision</h2>
+                        <h2 style="margin-bottom: 0;">Dynamic Bone Interaction</h2>
                         <p>Warning: This setting will impact your performance severely</p>
                         <div class="row-wrapper">
-                            <div class="option-caption">Enable Intercollision:</div>
+                            <div class="option-caption">Enable Interaction:</div>
                             <div class="option-input">
                                 <div id="InteractionDynamicBoneInterCollisionEnabled" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
                             </div>
@@ -609,6 +837,13 @@
                             </div>
                         </div>
 
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Selfcollision:</div>
+                            <div class="option-input">
+                                <div id="InteractionPhysicsCollidersSelfEnabled" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
                         <h2>Player Animator Triggers Interaction</h2>
                         <div class="row-wrapper">
                             <div class="option-caption">Enable Touch Triggers:</div>
@@ -623,7 +858,7 @@
 
                     <div id="settings-implementation" class="settings-categorie">
 
-                        <!--<h2>Tobii Eye Tracking</h2>
+                        <h2>Tobii Eye Tracking</h2>
                         <div class="row-wrapper">
                             <div class="option-caption">Enable Tracking:</div>
                             <div class="option-input">
@@ -635,7 +870,7 @@
                             <div class="option-input">
                                 <div id="InteractionTobiiEyeBlinking" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
                             </div>
-                        </div>-->
+                        </div>
 
                         <h2>BHaptics</h2>
                         <div class="row-wrapper">
@@ -654,6 +889,49 @@
                         
                     </div>
 
+                    <div id="settings-experimental" class="settings-categorie">
+                        
+                        <div class="row-wrapper">
+                            <div class="option-caption">Always On Microphone Mode:</div>
+                            <div class="option-input">
+                                <div id="ExperimentalAlwaysOnMicrophone" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <h2>IK Settings</h2>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Plant Feet:</div>
+                            <div class="option-input">
+                                <div id="IKPlantFeet" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Pin Hip to Tracker:</div>
+                            <div class="option-input">
+                                <div id="IKHipPinned" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Straighten Neck:</div>
+                            <div class="option-input">
+                                <div id="IKStraightenNeck" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Hip Shifting:</div>
+                            <div class="option-input">
+                                <div id="IKHipShifting" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Pre Straighten Spine:</div>
+                            <div class="option-input">
+                                <div id="IKPreStraightenSpine" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
                     <div id="settings-cache" class="settings-categorie">
                     </div>
 
@@ -794,12 +1072,6 @@
                         <div class="region-select reqion-as" onclick="instancingChangeRegion('AS', this);">AS</div>
                     </div>
 
-                    <h3>Select Content Rules</h3>
-                    <div class="content-btn btn-rule">
-                        <div class="rule-select rule-sfw active" onclick="instancingChangeRule('SFW', this);">SFW</div>
-                        <div class="rule-select rule-nsfw" onclick="instancingChangeRule('NSFW', this);">NSFW</div>
-                    </div>
-
                     <input id="instancing-type" class="inp-hidden" value="public">
                     <input id="instancing-region" class="inp-hidden" value="EU">
                     <input id="instancing-rule" class="inp-hidden" value="SFW">
@@ -938,7 +1210,7 @@
                     </div>
                     <div class="tab-contents">
                         <div id="tab-content-activity" class="tab-content active">
-                            <div class="activityDataAviable">
+                            <div class="activityDataAvailable">
                                 <img class="player-instance-world-image">
                                 <div class="player-instance-details">
                                     <h2>[World Name]</h2>
@@ -961,8 +1233,8 @@
                                    <div class="scroll-content"></div>
                                 </div>
                             </div>
-                            <div class="activityDataUnaviable hidden">
-                                <div class="activityDataUnaviableInfo">
+                            <div class="activityDataUnavailable hidden">
+                                <div class="activityDataUnavailableInfo">
                                     <img src="gfx\attention.svg">
                                     <div>
                                         No activity data, the user might be offline or is not a friend of yours.
@@ -970,7 +1242,7 @@
                                 </div>
                             </div>
                             <div class="activityDataOffline hidden">
-                                <div class="activityDataUnaviableInfo">
+                                <div class="activityDataUnavailableInfo">
                                     <img src="gfx\attention.svg">
                                     <div>
                                         The User is Exploring the Metaverse offline.
@@ -978,7 +1250,7 @@
                                 </div>
                             </div>
                             <div class="activityDataPrivate hidden">
-                                <div class="activityDataUnaviableInfo">
+                                <div class="activityDataUnavailableInfo">
                                     <img src="gfx\attention.svg">
                                     <div>
                                         The User is online in a private instance
@@ -987,8 +1259,8 @@
                             </div>
                         </div>
                         <div id="tab-content-feed" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -997,8 +1269,8 @@
                           </div>
                         </div>
                         <div id="tab-content-avatars" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -1007,8 +1279,8 @@
                           </div>
                         </div>
                         <div id="tab-content-worlds" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -1017,8 +1289,8 @@
                           </div>
                         </div>
                         <div id="tab-content-badges" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -1027,8 +1299,8 @@
                           </div>
                         </div>
                         <div id="tab-content-groups" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -1037,8 +1309,8 @@
                           </div>
                         </div>
                         <div id="tab-content-misc1" class="tab-content">
-                          <div class="activityDataUnaviable">
-                              <div class="activityDataUnaviableInfo">
+                          <div class="activityDataUnavailable">
+                              <div class="activityDataUnavailableInfo">
                                   <img src="gfx\attention.svg">
                                   <div>
                                       Under Construction.
@@ -1048,15 +1320,19 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="user-settings-dialog">
+                    
+                </div>
 
                 <div class="user-toolbar">
                     <div class="toolbar-btn friend-btn"><img src="gfx/friend.svg">Add Friend</div>
                     <div class="toolbar-btn block-btn disabled"><img src="gfx/block.svg">Block</div>
-                    <div class="toolbar-btn mute-btn disabled"><img src="gfx/user-mute.svg">Mute</div>
-                    <div class="toolbar-btn volume-btn disabled"><img src="gfx/nav-settings.svg">Settings</div>
+                    <div class="toolbar-btn volume-btn" onclick="showUserSettings();"><img src="gfx/nav-settings.svg">Settings</div>
                     <div class="toolbar-btn join-btn"><img src="gfx/btn-join.svg">Join</div>
                     <div class="toolbar-btn invite-btn"><img src="gfx/invite.svg">Invite</div>
                     <div class="toolbar-btn kick-btn"><img src="gfx/btn-kick.svg">Kick</div>
+                    <div class="toolbar-btn"></div>
                     <div class="toolbar-btn"></div>
                     <div class="toolbar-btn disabled"><img src="gfx/nav-mod-tools.svg">Moderate</div>
                 </div>
@@ -1256,9 +1532,10 @@
             <div class="toolbar">
                 <div class="toolbar-btn active" onclick="changeTab('home', this);"><img src="gfx/nav-home.svg">Home</div>
                 <div class="toolbar-btn" onclick="changeTab('friends', this);"><img src="gfx/nav-friends.svg">Friends</div>
-                <div class="toolbar-btn deactivated"><img src="gfx/nav-groups.svg">Groups</div>
+                <!--<div class="toolbar-btn deactivated"><img src="gfx/nav-groups.svg">Groups</div>-->
                 <div class="toolbar-btn" onclick="changeTab('avatars', this);"><img src="gfx/nav-avatars.svg">Avatars</div>
                 <div class="toolbar-btn" onclick="changeTab('worlds', this);"><img src="gfx/nav-worlds.svg">Worlds</div>
+                <div class="toolbar-btn" onclick="changeTab('props', this);"><img src="gfx/btn-props.svg">Props</div>
                 <div class="toolbar-btn-double">
                     <div class="time-display">00:00</div>
                 </div>
@@ -1267,7 +1544,7 @@
                 <div class="toolbar-btn" onclick="changeTab('messages', this);"><img src="gfx/nav-messages.svg">Messages</div>
                 <div class="toolbar-btn" onclick="changeTab('settings', this);"><img src="gfx/nav-settings.svg">Settings</div>
                 <!--<div class="toolbar-btn deactivated"><img src="gfx/nav-mod-tools.svg">Mod Tools</div>-->
-                <div onclick="mouseUnlock();" class="toolbar-btn"><img src="gfx/mouse.svg">Unlock</div>
+                <div onclick="mouseUnlock();" class="toolbar-btn"><img src="gfx/mouse.svg">Cursorlock</div>
                 <div id="props-btn" style="display:none;" onclick="" class="toolbar-btn"><img src="gfx/mouse.svg">Props</div>
                 <div class="toolbar-btn" onclick="changeTab('exit', this);"><img src="gfx/nav-exit.svg">Exit</div>
             </div>
