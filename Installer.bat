@@ -2,6 +2,13 @@
 
 :: Pre-Setup
 
+IF NOT exist "ChilloutVR_Data" (
+	echo [31m
+	echo It seems that this folder isn't the ChilloutVR Game Folder please move this bat into the ChilloutVR Game Folder!.
+pause
+GOTO NotFound
+)
+
 set config_download_unhollower=true
 )
 CLS
@@ -41,17 +48,19 @@ echo [33m---------------------- Select Custome UI Typ -----------------------[
 :: Selection of UI's
 
 SET choice=
-SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] or 2: Slime's [S]: 
+SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] , 2: Slime's [S] 3: Neradon's [N]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='M' GOTO MilchZockers
 IF '%choice%'=='m' GOTO MilchZockers
 IF '%choice%'=='S' GOTO Slimes
 IF '%choice%'=='s' GOTO Slimes
+IF '%choice%'=='N' GOTO Neradons
+IF '%choice%'=='n' GOTO Neradons
 IF '%choice%'=='' GOTO no
 )
+:MilchZockers
 echo [33m---------------------- Select UI Version -----------------------[0m
 )
-:MilchZockers
 SET choice=
 SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
@@ -64,9 +73,9 @@ IF '%choice%'=='' GOTO no
 pause
 exit
 )
+:Slimes
 echo [33m---------------------- Select UI Version -----------------------[0m
 )
-:Slimes
 SET choice=
 SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]: 
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
@@ -74,6 +83,22 @@ IF '%choice%'=='E' GOTO Experimental-Slime
 IF '%choice%'=='e' GOTO Experimental-Slime
 IF '%choice%'=='S' GOTO Stable-Slime
 IF '%choice%'=='s' GOTO Stable-Slime
+IF '%choice%'=='' GOTO no
+)
+pause
+exit
+)
+)
+:Neradons
+echo [33m---------------------- Select UI Version -----------------------[0m
+)
+SET choice=
+SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]: 
+IF NOT '%choice%'=='' SET choice=%choice:~0,1%
+IF '%choice%'=='E' GOTO Experimental-Neradon
+IF '%choice%'=='e' GOTO Experimental-Neradon
+IF '%choice%'=='S' GOTO Stable-Neradon
+IF '%choice%'=='s' GOTO Stable-Neradon
 IF '%choice%'=='' GOTO no
 )
 pause
@@ -99,8 +124,20 @@ start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableSlime.bat
 goto CleanUP
 exit
 )
-
-
+:Experimental-Neradon
+start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalNeradon.bat
+goto CleanUP
+exit
+)
+:Stable-Neradon
+start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableNeradon.bat
+goto CleanUP
+exit
+)
+:NotFound
+)
+exit
+)
 :CleanUP
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
