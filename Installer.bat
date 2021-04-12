@@ -22,7 +22,7 @@ echo [33m---------------------- Decompressing UI... -----------------------[0m
 )
 :: Decompress .zip.
 
-echo Decompressing UI...
+echo Decompressing Installers...
 powershell Expand-Archive Installers.zip -DestinationPath . -Force
 if %errorlevel% neq 0 (
 	echo [31m
@@ -36,7 +36,7 @@ if %errorlevel% neq 0 (
 )	
 del Installers.zip
 )
-echo [33m---------------------- Select Custom UI Typ -----------------------[0m
+echo [33m---------------------- Select Custome UI Typ -----------------------[0m
 )
 :: Selection of UI's
 

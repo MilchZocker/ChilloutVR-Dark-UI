@@ -52,7 +52,7 @@ echo:
 
 :: Download Slime-UI Stable from Github.
 
-echo [33m----------------- Custom UI ------------------[0m
+echo [33m----------------- Custome UI ------------------[0m
 
 echo Downloading newest UI from github...
 powershell -Command "Invoke-WebRequest https://codeload.github.com/Slime-Senpai/SlimyCVRUI/zip/stable -OutFile UI.zip"
@@ -83,21 +83,13 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-move /Y "SlimyCVRUI-stable\CVRTest\classlist.js" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\feed.js" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\index.html" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\slimyConfig.js" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\ui.css" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\ui2.css" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\ui3.css" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\ui.js" "CVRTest"
-move /Y "SlimyCVRUI-stable\CVRTest\ui2.js" "CVRTest"
+move /Y "SlimyCVRUI-stable\CVRTest\*" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-del /Q /F "SlimyCVRUI-stable\README.md"
+del /Q /F "SlimyCVRUI-stable\*"
 rmdir /Q /S "SlimyCVRUI-stable\CVRTest"
 rmdir /Q /S "SlimyCVRUI-stable"
    )

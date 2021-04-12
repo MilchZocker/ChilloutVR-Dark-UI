@@ -17,7 +17,7 @@ echo ///
 echo ///
 echo [0m
 echo ^    --------------------------------------------------
-echo ^    ^|  ChilloutVR Dark UI by UCC installer    ^|
+echo ^    ^|  ChilloutVR UI by Neradon (Installer by UCC)   ^|
 echo:
 
 :: Is ChilloutVR Folder?
@@ -50,12 +50,12 @@ echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
 echo:
 
-:: Download UI Stable from Github.
+:: Download Neradon-UI Stable from Github.
 
 echo [33m----------------- Custome UI ------------------[0m
 
 echo Downloading newest UI from github...
-powershell -Command "Invoke-WebRequest https://github.com/MilchZocker/ChillouVR-Dark-UI/archive/Stable.zip -OutFile UI.zip"
+powershell -Command "Invoke-WebRequest https://codeload.github.com/Neradon/CVRPlus/zip/refs/heads/main -OutFile UI.zip"
 if %errorlevel% neq 0 (
 	echo [31m
 	echo CRITICAL ERROR: Failed to download UI zip file.
@@ -83,18 +83,14 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-move /Y "ChillouVR-Dark-UI-Stable\ui.css" "CVRTest"
-move /Y "ChillouVR-Dark-UI-Stable\index.html" "CVRTest"
-move /-Y "ChillouVR-Dark-UI-Stable\background.png" "CVRTest"
+move /Y "CVRPlus-main\*" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-del /Q /F "ChillouVR-Dark-UI-Stable\README.md"
-del /Q /F "ChillouVR-Dark-UI-Stable\LICENSE"
-del /Q /F "ChillouVR-Dark-UI-Stable\news!.png"
-rmdir /Q /S "ChillouVR-Dark-UI-Stable"
+rmdir /Q /S "CVRPlus-main\ExampleImages"
+rmdir /Q /S "CVRPlus-main"
    )
 :: Installation Finished.
 )
