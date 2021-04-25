@@ -48,6 +48,7 @@ cd /d "ChilloutVR_Data\StreamingAssets\Cohtml\UIResources"
 
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
 echo:
 
 :: Download UI Experimental from Github.
@@ -83,17 +84,13 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-move /Y "ChillouVR-Dark-UI-Experimental\ui.css" "CVRTest"
-move /Y "ChillouVR-Dark-UI-Experimental\index.html" "CVRTest"
-move /-Y "ChillouVR-Dark-UI-Experimental\background.png" "CVRTest"
+ROBOCOPY /E /MOVE "ChillouVR-Dark-UI-Experimental" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-del /Q /F "ChillouVR-Dark-UI-Experimental\README.md"
-del /Q /F "ChillouVR-Dark-UI-Experimental\LICENSE"
-del /Q /F "ChillouVR-Dark-UI-Experimental\news!.png"
+del /Q /F 7z.dll
 rmdir /Q /S "ChillouVR-Dark-UI-Experimental"
    )
 :: Installation Finished.
@@ -107,7 +104,7 @@ echo ^    --------------------------------------------------
 echo [0m
 echo:
 echo:
-pause
+TIMEOUT /T 10
 exit
    )
 :: no variable.

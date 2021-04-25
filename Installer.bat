@@ -19,6 +19,7 @@ echo [33m---------------------- Pre-Setup -----------------------[0m
 
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll""
 echo:
 
 echo Downloading Experimental UI Installer...
@@ -48,7 +49,7 @@ echo [33m---------------------- Select Custome UI Typ -----------------------[
 :: Selection of UI's
 
 SET choice=
-SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] , 2: Slime's [S] 3: Neradon's [N]: 
+SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] , 2: Slime's [S] , 3: Neradon's [N]: or 3: Deinstall Custom UI (could delete UI settings) [D]:
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='M' GOTO MilchZockers
 IF '%choice%'=='m' GOTO MilchZockers
@@ -56,13 +57,15 @@ IF '%choice%'=='S' GOTO Slimes
 IF '%choice%'=='s' GOTO Slimes
 IF '%choice%'=='N' GOTO Neradons
 IF '%choice%'=='n' GOTO Neradons
+IF '%choice%'=='D' GOTO Default
+IF '%choice%'=='d' GOTO Default
 IF '%choice%'=='' GOTO no
 )
 :MilchZockers
 echo [33m---------------------- Select UI Version -----------------------[0m
 )
 SET choice=
-SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]: 
+SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]:
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='E' GOTO Experimental-MilchZocker
 IF '%choice%'=='e' GOTO Experimental-MilchZocker
@@ -134,6 +137,11 @@ start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableNeradon.bat
 goto CleanUP
 exit
 )
+:Default
+start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStableDefault.bat
+goto CleanUP
+exit
+)
 :NotFound
 )
 exit
@@ -142,5 +150,7 @@ exit
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
+del /Q /F 7z.dll
 )
+TIMEOUT /T 3
 exit

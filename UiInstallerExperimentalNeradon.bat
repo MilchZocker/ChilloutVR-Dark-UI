@@ -48,6 +48,7 @@ cd /d "ChilloutVR_Data\StreamingAssets\Cohtml\UIResources"
 
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
 echo:
 
 :: Download Neradon-UI Experimental from Github.
@@ -83,13 +84,13 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-move /Y "CVRPlus-experimental\*" "CVRTest"
+ROBOCOPY /E /MOVE "CVRPlus-experimental" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-rmdir /Q /S "CVRPlus-experimental\ExampleImages"
+del /Q /F 7z.dll
 rmdir /Q /S "CVRPlus-experimental"
    )
 :: Installation Finished.
@@ -103,7 +104,7 @@ echo ^    --------------------------------------------------
 echo [0m
 echo:
 echo:
-pause
+TIMEOUT /T 10
 exit
    )
 :: no variable.

@@ -48,6 +48,7 @@ cd /d "ChilloutVR_Data\StreamingAssets\Cohtml\UIResources"
 
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
 echo:
 
 :: Download Slime-UI Experimental from Github.
@@ -83,14 +84,13 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-move /Y "SlimyCVRUI-experimental\CVRTest\*" "CVRTest"
+ROBOCOPY /E /MOVE "SlimyCVRUI-experimental\CVRTest" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
-del /Q /F "SlimyCVRUI-experimental\*"
-rmdir /Q /S "SlimyCVRUI-experimental\CVRTest"
+del /Q /F 7z.dll
 rmdir /Q /S "SlimyCVRUI-experimental"
    )
 :: Installation Finished.
@@ -104,7 +104,7 @@ echo ^    --------------------------------------------------
 echo [0m
 echo:
 echo:
-pause
+TIMEOUT /T 10
 exit
    )
 :: no variable.

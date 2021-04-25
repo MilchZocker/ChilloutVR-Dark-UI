@@ -17,7 +17,7 @@ echo ///
 echo ///
 echo [0m
 echo ^    --------------------------------------------------
-echo ^    ^|  ChilloutVR UI by Slime (Installer by UCC)   ^|
+echo ^    ^|  ChilloutVR Custom Ui deinstaller (by UCC)   ^|
 echo:
 
 :: Is ChilloutVR Folder?
@@ -51,12 +51,12 @@ powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAu
 powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
 echo:
 
-:: Download Slime-UI Stable from Github.
+:: Download Neradon-UI Stable from Github.
 
 echo [33m----------------- Custome UI ------------------[0m
 
 echo Downloading newest UI from github...
-powershell -Command "Invoke-WebRequest https://codeload.github.com/Slime-Senpai/SlimyCVRUI/zip/stable -OutFile UI.zip"
+powershell -Command "Invoke-WebRequest https://codeload.github.com/MilchZocker/ChillouVR-Dark-UI/zip/refs/heads/Default-UI-files -OutFile UI.zip"
 if %errorlevel% neq 0 (
 	echo [31m
 	echo CRITICAL ERROR: Failed to download UI zip file.
@@ -84,14 +84,14 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-ROBOCOPY /E /MOVE "SlimyCVRUI-stable\CVRTest" "CVRTest"
+ROBOCOPY /E /MOVE "ChillouVR-Dark-UI-Default-UI-files\CVRTest" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
 del /Q /F 7z.dll
-rmdir /Q /S "SlimyCVRUI-stable"
+rmdir /Q /S "ChillouVR-Dark-UI-Default-UI-files"
    )
 :: Installation Finished.
 )
@@ -99,7 +99,7 @@ echo:
 echo:
 echo [32m
 echo ^    --------------------------------------------------
-echo ^    ^|         Custome UI is now Installed!          ^|
+echo ^    ^|         Default UI is now Installed!          ^|
 echo ^    --------------------------------------------------
 echo [0m
 echo:
