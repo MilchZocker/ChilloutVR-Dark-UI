@@ -19,7 +19,7 @@ echo [33m---------------------- Pre-Setup -----------------------[0m
 
 echo Downloading 7zip...
 powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
-powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll""
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
 echo:
 
 echo Downloading Experimental UI Installer...
