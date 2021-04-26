@@ -109,36 +109,43 @@ exit
 )
 :Experimental-MilchZocker
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat
+SET UI=UiInstallerExperimental
 goto CleanUP
 exit
 )
 :Stable-MilchZocker
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStable.bat
+SET UI=UiInstallerStable
 goto CleanUP
 exit
 )
 :Experimental-Slime
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalSlime.bat
+SET UI=UiInstallerExperimentalSlime
 goto CleanUP
 exit
 )
 :Stable-Slime
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableSlime.bat
+SET UI=UiInstallerStableSlime
 goto CleanUP
 exit
 )
 :Experimental-Neradon
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalNeradon.bat
+SET UI=UiInstallerExperimentalNeradon
 goto CleanUP
 exit
 )
 :Stable-Neradon
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableNeradon.bat
+SET UI=UiInstallerStableNeradon
 goto CleanUP
 exit
 )
 :Default
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStableDefault.bat
+SET UI=UIInstallerStableDefault
 goto CleanUP
 exit
 )
@@ -146,11 +153,21 @@ exit
 )
 exit
 )
+:no
+echo Installer will now close if you want to install an UI type the corresponding letter!
+del /Q /F "ChillouVR-Dark-UI-Auto-Installers\*"
+TIMEOUT /T 10
+del /Q /F 7z.exe
+del /Q /F 7z.dll
+exit
+)
 :CleanUP
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
 del /Q /F 7z.dll
+attrib +R "ChillouVR-Dark-UI-Auto-Installers\%UI%.bat"
+del /Q "ChillouVR-Dark-UI-Auto-Installers\*"
 )
 TIMEOUT /T 3
 exit
