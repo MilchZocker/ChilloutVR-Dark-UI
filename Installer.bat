@@ -15,34 +15,20 @@ CLS
 )
 echo [33m---------------------- Pre-Setup -----------------------[0m
 )
-:: Download 7zip.
-
-echo Downloading 7zip...
-powershell -Command "Invoke-WebRequest https://github.com/Slaynash/MelonLoaderAutoInstaller/raw/master/7z.exe -OutFile 7z.exe"
-powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/Slaynash/MelonLoaderAutoInstaller/master/7z.dll -OutFile 7z.dll"
-echo:
-
-echo Downloading Experimental UI Installer...
-powershell -Command "Invoke-WebRequest https://codeload.github.com/MilchZocker/ChillouVR-Dark-UI/zip/Auto-Installers -OutFile Installers.zip"
-echo:
+if not exist "ChillouVR-Dark-UI-Auto-Installers" mkdir ChillouVR-Dark-UI-Auto-Installers
 )
-echo [33m---------------------- Decompressing UI... -----------------------[0m
+For /F %%A In ('
+    MsHTA VBScript:Execute("Set o=CreateObject(""Scripting.FileSystemObject""):o.GetStandardStream(1).Write(o.GetFileVersion(""ChilloutVR.exe"")):Close"^)
+') Do Set "CVR=%%A"
+echo current CVR executable version is %CVR%
+set current=2019.4.13.34615
+if %CVR%==%current% (
+goto current
 )
-:: Decompress .zip.
-
-echo Decompressing Installers...
-powershell Expand-Archive Installers.zip -DestinationPath . -Force
-if %errorlevel% neq 0 (
-	echo [31m
-	echo CRITICAL ERROR: Failed to extract the UI zip file.
-	echo Please report this error to the UCC^).
-	echo [0m
-	pause
-	exit /b %errorlevel%
-   )
-:: Delete .zip.
-)	
-del Installers.zip
+if not %CVR%==%current% (
+goto outdated
+)
+:current
 )
 echo [33m---------------------- Select Custome UI Typ -----------------------[0m
 )
@@ -108,42 +94,63 @@ pause
 exit
 )
 :Experimental-MilchZocker
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UiInstallerExperimental.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat
 SET UI=UiInstallerExperimental
 goto CleanUP
 exit
 )
 :Stable-MilchZocker
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UiInstallerStable.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UiInstallerStable.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStable.bat
 SET UI=UiInstallerStable
 goto CleanUP
 exit
 )
 :Experimental-Slime
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/UiInstallerExperimentalSlime.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalSlime.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalSlime.bat
 SET UI=UiInstallerExperimentalSlime
 goto CleanUP
 exit
 )
 :Stable-Slime
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UiInstallerStableSlime.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableSlime.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableSlime.bat
 SET UI=UiInstallerStableSlime
 goto CleanUP
 exit
 )
 :Experimental-Neradon
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UiInstallerExperimentalNeradon.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalNeradon.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerExperimentalNeradon.bat
 SET UI=UiInstallerExperimentalNeradon
 goto CleanUP
 exit
 )
 :Stable-Neradon
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UiInstallerStableNeradon.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableNeradon.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UiInstallerStableNeradon.bat
 SET UI=UiInstallerStableNeradon
 goto CleanUP
 exit
 )
 :Default
+echo Downloading Experimental UI Installer...
+powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChillouVR-Dark-UI/Auto-Installers/UIInstallerStableDefault.bat -OutFile ChillouVR-Dark-UI-Auto-Installers\UIInstallerStableDefault.bat"
+echo:
 start ChillouVR-Dark-UI-Auto-Installers\UIInstallerStableDefault.bat
 SET UI=UIInstallerStableDefault
 goto CleanUP
@@ -153,12 +160,31 @@ exit
 )
 exit
 )
+:outdated
+echo Custome Ui's might be outdated do you wanna continue anyway?!
+SET choice=
+SET /p choice=do you want to continue anyway? that could couse problemes. 1: Yes [Y] or 2: No [N]: 
+IF NOT '%choice%'=='' SET choice=%choice:~0,1%
+IF '%choice%'=='Y' GOTO current
+IF '%choice%'=='y' GOTO current
+IF '%choice%'=='N' GOTO not
+IF '%choice%'=='N' GOTO not
+IF '%choice%'=='' GOTO not
+)
+pause
+exit
+)
 :no
 echo Installer will now close if you want to install an UI type the corresponding letter!
 del /Q /F "ChillouVR-Dark-UI-Auto-Installers\*"
 TIMEOUT /T 10
 del /Q /F 7z.exe
 del /Q /F 7z.dll
+exit
+)
+:not
+echo Installer will now close if you need any help join us on Discord: https://discord.gg/yApCk5atsa
+TIMEOUT /T 10
 exit
 )
 :CleanUP
