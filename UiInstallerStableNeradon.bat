@@ -56,7 +56,7 @@ echo:
 echo [33m----------------- Custome UI ------------------[0m
 
 echo Downloading newest UI from github...
-powershell -Command "Invoke-WebRequest https://codeload.github.com/Neradon/CVRPlus/zip/refs/heads/main -OutFile UI.zip"
+powershell -Command "Invoke-WebRequest https://codeload.github.com/Neradon/Dasui/zip/refs/heads/main -OutFile UI.zip"
 if %errorlevel% neq 0 (
 	echo [31m
 	echo CRITICAL ERROR: Failed to download UI zip file.
