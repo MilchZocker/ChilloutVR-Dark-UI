@@ -9,7 +9,7 @@
         <div class="wrapper">
 
             <div id="home" class="content in">
-                <h1>Welcome to ChilloutVR</h1>
+                <h1>Welcome to ChilloutVR Experimental</h1>
 
                 <div class="content-shortcuts">
                     <div class="content-caption">Shortcuts</div>
@@ -251,11 +251,12 @@
                             <div class="filter-option" onclick="switchSettingCategorie('settings-props', this)">Prop Settings</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-interaction', this)">Interactions</div>
                             <div class="filter-option" onclick="switchSettingCategorie('settings-implementation', this)">Implementation</div>
-                            <div class="filter-option" onclick="switchSettingCategorie('settings-experimental', this)">experimental</div>
+                            <div class="filter-option" onclick="switchSettingCategorie('settings-experimental', this)">Experimental</div>
+                            <div class="filter-option" onclick="switchSettingCategorie('settings-support', this)">Support</div>
                             <!--<div class="filter-option" onclick="switchSettingCategorie('settings-cache', this)">Cache management</div>-->
                         </div>
                     </div>
-                    <div class="content-btn first" onclick="ReloadAllAvatars();">Reload Avatars</div>
+                    <!--<div class="content-btn first" onclick="ReloadAllAvatars();">Reload Avatars</div>-->
                     <div class="content-btn color-primary second" onclick="settingsReset();">Reset Settings</div>
                 </div>
                 <div class="list-content">
@@ -305,12 +306,12 @@
                                 <div id="GeneralInteractableHighlight" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
                             </div>
                         </div>
-                        <div class="row-wrapper">
-                            <div class="option-caption">Enable Step Assist:</div>
+                        <!--<div class="row-wrapper">
+                            <div class="option-caption">Language:</div>
                             <div class="option-input">
-                                <div id="GeneralEnableStepAssist" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                                <div id="GeneralLanguage" class="inp_dropdown" data-options="ab:Abkhazian,aa:Afar,af:Afrikaans,ak:Akan,sq:Albanian,am:Amharic,ar:Arabic,an:Aragonese,hy:Armenian,as:Assamese,av:Avaric,ae:Avestan,ay:Aymara,az:Azerbaijani,bm:Bambara,ba:Bashkir,eu:Basque,be:Belarusian,bn:Bengali,bh:Bihari languages,bi:Bislama,bs:Bosnian,br:Breton,bg:Bulgarian,my:Burmese,ca:Catalan&#44; Valencian,ch:Chamorro,ce:Chechen,ny:Chichewa&#44; Chewa&#44; Nyanja,zh:Chinese,cv:Chuvash,kw:Cornish,co:Corsican,cr:Cree,hr:Croatian,cs:Czech,da:Danish,dv:Divehi&#44; Dhivehi&#44; Maldivian,nl:Dutch&#44; Flemish,dz:Dzongkha,en:English,eo:Esperanto,et:Estonian,ee:Ewe,fo:Faroese,fj:Fijian,fi:Finnish,fr:French,ff:Fulah,gl:Galician,ka:Georgian,de:German,el:Greek&#44; Modern(1453–),gn:Guarani,gu:Gujarati,ht:Haitian&#44; Haitian Kreol,ha:Hausa,he:Hebrew,hz:Herero,hi:Hindi,ho:Hiri Motu,hu:Hungarian,ia:Interlingua (International Auxiliary Language Association),id:Indonesian,ie:Interlingue&#44; Occidental,ga:Irish,ig:Igbo,ik:Inupiaq,io:Ido,is:Icelandic,it:Italian,iu:Inuktitut,ja:Japanese,jv:Javanese,kl:Kalaallisut&#44; Greenlandic,kn:Kannada,kr:Kanuri,ks:Kashmiri,kk:Kazakh,km:Central Khmer,ki:Kikuyu&#44; Gikuyu,rw:Kinyarwanda,ky:Kirghiz&#44; Kyrgyz,kv:Komi,kg:Kongo,ko:Korean,ku:Kurdish,kj:Kuanyama&#44; Kwanyama,la:Latin,lb:Luxembourgish&#44; Letzeburgesch,lg:Ganda,li:Limburgan&#44; Limburger&#44; Limburgish,ln:Lingala,lo:Lao,lt:Lithuanian,lu:Luba-Katanga,lv:Latvian,gv:Manx,mk:Macedonian,mg:Malagasy,ms:Malay,ml:Malayalam,mt:Maltese,mi:Maori,mr:Marathi,mh:Marshallese,mn:Mongolian,na:Nauru,nv:Navajo&#44; Navaho,nd:North Ndebele,ne:Nepali,ng:Ndonga,nb:Norwegian Bokmål,nn:Norwegian Nynorsk,no:Norwegian,ii:Sichuan Yi&#44; Nuosu,nr:South Ndebele,oc:Occitan,oj:Ojibwa,cu:Church Slavic&#44; Old Slavonic&#44; Church Slavonic&#44; Old Bulgarian&#44; Old Church Slavonic,om:Oromo,or:Oriya,os:Ossetian&#44; Ossetic,pa:Panjabi&#44; Punjabi,pi:Pali,fa:Persian,pl:Polish,ps:Pashto&#44; Pushto,pt:Portuguese,qu:Quechua,rm:Romansh,rn:Rundi,ro:Romanian&#44; Moldavian&#44; Moldovan,ru:Russian,sa:Sanskrit,sc:Sardinian,sd:Sindhi,se:Northern&#44; Sami,sh:Serbo-Croatian,sm:Samoan,sg:Sango,sr:Serbian,gd:Gaelic&#44; Scottish Gaelic,sn:Shona,si:Sinhala&#44; Sinhalese,sk:Slovak,sl:Slovenian,so:Somali,st:Southern Sotho,es:Spanish&#44; Castilian,su:Sundanese,sw:Swahili,ss:Swati,sv:Swedish,ta:Tamil,te:Telugu,tg:Tajik,th:Thai,ti:Tigrinya,bo:Tibetan,tk:Turkmen,tl:Tagalog,tn:Tswana,to:Tonga (Tonga Islands),tr:Turkish,ts:Tsonga,tt:Tatar,tw:Twi,ty:Tahitian,ug:Uighur&#44; Uyghur,uk:Ukrainian,ur:Urdu,uz:Uzbek,ve:Venda,vi:Vietnamese,vo:Volapük,wa:Walloon,cy:Welsh,wo:Wolof,fy:Western Frisian,xh:Xhosa,yi:Yiddish,yo:Yoruba,za:Zhuang&#44; Chuang,zu:Zulu" data-current="en" data-saveOnChange="true"></div>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="row-wrapper">
                             <div class="option-caption">Time Format:</div>
                             <div class="option-input">
@@ -338,7 +339,7 @@
 
                         <div class="content-btn" onclick="logout();">Logout</div>
                     </div>
-
+                    
                     <div id="settings-graphics" class="settings-categorie">
 
                         <div class="row-wrapper">
@@ -354,6 +355,13 @@
                                 <div id="GraphicsResolutionPresets" class="inp_dropdown" data-options="1920x1080,1366x768,1440x900,1536x864,2560x1440" data-current="1920x1080" data-saveOnChange="true"></div>
                             </div>
                         </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable VSync:</div>
+                            <div class="option-input">
+                                <div id="GraphicsVSync" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
                         
                         <div class="row-wrapper">
                             <div class="option-caption">Framerate Target:</div>
@@ -361,6 +369,19 @@
                                 <div id="GraphicsFramerateTarget" class="inp_dropdown" data-options="60,90,100,120,144,165,240,0:Unlimited" data-current="144" data-saveOnChange="true"></div>
                             </div>
                         </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Game anti-aliasing:</div>
+                            <div class="option-input">
+                                <div id="GraphicsMsaaLevel" class="inp_dropdown" data-options="1:None,2:2x,4:4x,8:8x" data-current="8" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Camera anti-aliasing:</div>
+                            <div class="option-input">
+                                <div id="CameraMsaaLevel" class="inp_dropdown" data-options="0:Same as main camera,1:None,2:2x,4:4x,8:8x" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        
                         <div class="row-wrapper">
                             <div class="option-caption">Maximum Mirror Resolution:</div>
                             <div class="option-input">
@@ -380,21 +401,76 @@
                             </div>
                         </div>
                         <div class="row-wrapper">
-                            <div class="option-caption">Enable Bloom:</div>
+                            <div class="option-caption">Highres Portals:</div>
+                            <div class="option-input">
+                                <div id="GraphicsHighResPortalImages" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="row-wrapper">
+                            <div class="option-caption">Bloom:</div>
                             <div class="option-input">
                                 <div id="GraphicsBloom" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
                             </div>
                         </div>
                         <div class="row-wrapper">
-                            <div class="option-caption">Enable AO:</div>
+                            <div class="option-caption">Ambient Occlusion:</div>
                             <div class="option-input">
                                 <div id="GraphicsAO" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
                             </div>
                         </div>
                         <div class="row-wrapper">
-                            <div class="option-caption">Enable VSync:</div>
+                            <div class="option-caption">Color Grading:</div>
                             <div class="option-input">
-                                <div id="GraphicsVSync" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                                <div id="GraphicsColorGrading" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Auto Exposure:</div>
+                            <div class="option-input">
+                                <div id="GraphicsAutoExposure" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Chromatic Aberration:</div>
+                            <div class="option-input">
+                                <div id="GraphicsChromaticAberration" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Depth of Field:</div>
+                            <div class="option-input">
+                                <div id="GraphicsDepthOfField" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Grain:</div>
+                            <div class="option-input">
+                                <div id="GraphicsGrain" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Lens Distortion:</div>
+                            <div class="option-input">
+                                <div id="GraphicsLensDistortion" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Motion Blur:</div>
+                            <div class="option-input">
+                                <div id="GraphicsMotionBlur" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Screen Space Reflections:</div>
+                            <div class="option-input">
+                                <div id="GraphicsScreenSpaceReflections" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Vignette:</div>
+                            <div class="option-input">
+                                <div id="GraphicsVignette" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
                             </div>
                         </div>
 
@@ -444,6 +520,12 @@
                                 <div id="AudioProp" class="inp_slider" data-min="0" data-max="100" data-current="100" data-saveOnChange="true" data-continuousUpdate="true"></div>
                             </div>
                         </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">VideoPlayer:</div>
+                            <div class="option-input">
+                                <div id="AudioVideoPlayer" class="inp_slider" data-min="0" data-max="100" data-current="100" data-saveOnChange="true" data-continuousUpdate="true"></div>
+                            </div>
+                        </div>
 
                         <div class="row-wrapper">
                             <div class="option-caption">Microphone Input:</div>
@@ -486,6 +568,12 @@
 
                     <div id="settings-input" class="settings-categorie">
                         <div class="row-wrapper">
+                            <div class="option-caption">Use Holoport:</div>
+                            <div class="option-input">
+                                <div id="ControlEnableHoloPort" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        <div class="row-wrapper">
                             <div class="option-caption">Use Snap turning (VR):</div>
                             <div class="option-input">
                               <div id="ControlSnapTurning" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
@@ -516,6 +604,13 @@
                             </div>
                         </div>
                         <div class="row-wrapper">
+                            <div class="option-caption">Right Stick Digital Deadzone:</div>
+                            <div class="option-input">
+                                <div id="ControlEnableRightsStickDigitalDeadZones" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="row-wrapper">
                             <div class="option-caption">Mouse Sensitivity:</div>
                             <div class="option-input">
                                 <div id="ControlMouseSensitivity" class="inp_slider" data-min="1" data-max="100" data-current="10" data-saveOnChange="true"></div>
@@ -539,6 +634,12 @@
                                 <div id="ControlViveAdvancedControls" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
                             </div>
                         </div>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Gamepad input:</div>
+                            <div class="option-input">
+                                <div id="ControlEnableGamepad" class="inp_toggle" data-current="true" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="settings-filter" class="settings-categorie">
@@ -550,6 +651,13 @@
                             <div class="option-caption">Show Avatars for:</div>
                             <div class="option-input">
                                 <div id="ContentFilterVisibility" class="inp_dropdown" data-options="0:Nobody,1:Friends,2:Everyone" data-current="0" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Max Avatar Size:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterMaxDLSize" class="inp_dropdown" data-options="0:Unlimited,5:5 MB,10:10 MB,20:20 MB,50:50 MB, 100:100 MB" data-current="0" data-saveOnChange="true"></div>
                             </div>
                         </div>
                         
@@ -668,6 +776,15 @@
                                 <div id="ContentFilterWindZones" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
                             </div>
                         </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Lights:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterLights" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="content-btn" onclick="ReloadAllAvatars();">Reload Avatars</div>
                         
                         <div style="width: 10px; height: 200px;"></div>
                         
@@ -679,6 +796,13 @@
                             <div class="option-caption">Enable Props:</div>
                             <div class="option-input">
                                 <div id="ContentFilterPropsEnabled" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Max Prop Size:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsMaxDLSize" class="inp_dropdown" data-options="0:Unlimited,5:5 MB,10:10 MB,20:20 MB,50:50 MB, 100:100 MB" data-current="0" data-saveOnChange="true"></div>
                             </div>
                         </div>
                         
@@ -801,6 +925,13 @@
                             <div class="option-caption">Windzones:</div>
                             <div class="option-input">
                                 <div id="ContentFilterPropsWindZones" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Lights:</div>
+                            <div class="option-input">
+                                <div id="ContentFilterPropsLights" class="inp_dropdown" data-options="0:Hide,1:Show for friends,2:Show" data-current="2" data-saveOnChange="true"></div>
                             </div>
                         </div>
 
@@ -940,6 +1071,21 @@
                                 <div id="InteractionBHapticsTriggerPlacement" class="inp_dropdown" data-options="0:Hands,1:+ Fingers,2:+ Arms,3:+ Torso,4:+ Legs,5:+ Head" data-current="0" data-saveOnChange="true"></div>
                             </div>
                         </div>
+
+                        <h2>Vive Face tracking</h2>
+                        <div class="row-wrapper">
+                            <div class="option-caption">Enable Tracking:</div>
+                            <div class="option-input">
+                                <div id="InteractionViveFaceTracking" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="row-wrapper">
+                            <div class="option-caption">Intensity:</div>
+                            <div class="option-input">
+                                <div id="InteractionViveFaceTrackingStrength" class="inp_slider" data-min="50" data-max="500" data-current="100" data-saveOnChange="true" data-continuousUpdate="true"></div>
+                            </div>
+                        </div>
                         
                     </div>
 
@@ -983,7 +1129,74 @@
                                 <div id="IKPreStraightenSpine" class="inp_toggle" data-current="false" data-saveOnChange="true"></div>
                             </div>
                         </div>
+                    </div>
 
+                    <div id="settings-support" class="settings-categorie">
+                        
+                        <div class="text-center">
+                            <p>Thank you for playing ChilloutVR!</p>
+                            <p>&nbsp;</p>
+                        </div>
+
+                        <div class="text-center">
+                            <p>To get general help or support you can use the following channels to get in touch with us:</p>
+                            <p>&nbsp;</p>
+                        </div>
+                        
+                        <div class="contact-icons">
+                            <div class="contact-icon">
+                                <img src="gfx/discord.svg"> discord.gg/abi
+                            </div>
+                            <div class="contact-icon">
+                                <img src="gfx/email.svg"> team@abinteractive.net
+                            </div>
+                            <div class="contact-icon">
+                                <img src="gfx/twitter.svg"> @AlphaBlendNET
+                            </div>
+                        </div>
+                        
+                        <div class="text-wrapper">
+                            <div class="text-left-half">
+                                <p>If you experience technical issues, bugs or performance problems, please click on the button below to generate a support code.</p>
+                                <p>&nbsp;</p>
+
+                                <div class="content-btn" onclick="GenerateSupportCode();">Generate Support Code</div>
+                                <div id="support-code-display" class="support-code-display" onclick="CopySupportCode('');"></div>
+                                <div class="support-code-hint">You can copy the support code by clicking the field above</div>
+                            </div>
+                            <div class="text-right-half">
+                                <table>
+                                    <tbody>
+                                        <tr class="first">
+                                            <th>Hardware</th>
+                                            <th>Software</th>
+                                        </tr>
+                                        <tr class="last">
+                                            <td class="first">
+                                                <div>Device Model</div>
+                                                <div>Graphics Device</div>
+                                                <div>Processor</div>
+                                                <div>Amount of RAM</div>
+                                            </td>
+                                            <td>
+                                                <div>Unity Version</div>
+                                                <div>Game version</div>
+                                                <div>Operationg System</div>
+                                                <div>Loaded Assemblies</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p>&nbsp;</p>
+                                <p>Please note that we may be unable to process bug reports or issue reports without a valid support code for the session you are reporting the issue for.</p>
+                                <p>&nbsp;</p>
+                            </div>
+                        </div>
+
+                        <div class="text-left">
+                            <p>Generating a code will send us a message including your log files and the information mentioned in the table on the right side of this page.</p>
+                            <p>By using this code you can report a bug / issue at https://forums.abinteractive.net</p>
+                        </div>
                     </div>
                     
                     <div id="settings-cache" class="settings-categorie">
@@ -1411,7 +1624,7 @@
 
                 <div class="user-toolbar">
                     <div class="toolbar-btn friend-btn"><img src="gfx/friend.svg">Add Friend</div>
-                    <div class="toolbar-btn block-btn disabled"><img src="gfx/block.svg">Block</div>
+                    <div class="toolbar-btn block-btn"><img src="gfx/block.svg">Block</div>
                     <div class="toolbar-btn volume-btn" onclick="showUserSettings();"><img src="gfx/nav-settings.svg">Settings</div>
                     <div class="toolbar-btn join-btn"><img src="gfx/btn-join.svg">Join</div>
                     <div class="toolbar-btn invite-btn"><img src="gfx/invite.svg">Invite</div>
@@ -1494,6 +1707,7 @@
             </div>
             
             <div id="keyboard" class="content hidden">
+                <input type="text" id="world-ui-input" data-submit="sendToWorldUi();" style="position: absolute; left: -9999px;" />
                 <div class="keyboard-row r1">
                     <input type="text" id="keyoard-input" />
                 </div>
@@ -1560,7 +1774,7 @@
                 </div>
                 <div class="keyboard-row r6">
                     <div class="keyboard-func" data-key-func="CLEAR">clear</div>
-                    <div class="keyboard-mod" data-key-mod="">&nbsp;&nbsp;&nbsp;</div>
+                    <div class="keyboard-func" data-key-func="PASTE">paste</div>
                     <div class="keyboard-key space" data-key=" " data-key-shift=" " data-key-altgr=" ">&nbsp;</div>
                     <div class="keyboard-mod" data-key-mod="">&nbsp;&nbsp;&nbsp;</div>
                     <div class="keyboard-func" data-key-func="CLEAR">clear</div>

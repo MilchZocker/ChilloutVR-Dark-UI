@@ -34,6 +34,13 @@ cvr.fn = Library.prototype = {
         }
         return this;
     },
+    addHTMLLegacy: function (html) {
+        var len = this.length;
+        while (len--) {
+            this[len].innerHTML += html;
+        }
+        return this;
+    },
     addHTML: function (html) {
         var len = this.length;
         while (len--) {
@@ -128,6 +135,15 @@ cvr.fn = Library.prototype = {
         } else {
             return false;
         }
+    },
+    remove: function () {
+        var len = this.length;
+        if (len > 0) {
+            this[0].parentNode.removeChild(this[0]);
+            return this;
+        } else {
+            return this;
+        }
     }
 };
 cvr.defVal = function (_val, _defVal) {
@@ -197,3 +213,35 @@ cvr.simpleRequest = function(url, method, data){
     }
     engine.call('CVRAppCallSendRequest', url, method, dataString);
 };
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+        "(": '&lpar;',
+        ")": '&rpar;'
+    };
+    return text.replace(/[&<>"'\(\)]/g, function(m) { return map[m]; });
+}
+function escapeForParameter(text) {
+    var map = {
+        "'": '\\\'',
+    };
+    return text.replace(/[']/g, function(m) { return map[m]; });
+}
+Object.defineProperty(String.prototype, "makeSafe", {
+    value: function makeSafe() {
+        return escapeHtml(this);
+    },
+    writable: true,
+    configurable: true
+});
+Object.defineProperty(String.prototype, "makeParameterSafe", {
+    value: function makeParameterSafe() {
+        return escapeForParameter(this);
+    },
+    writable: true,
+    configurable: true
+});

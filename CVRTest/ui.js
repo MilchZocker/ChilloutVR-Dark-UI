@@ -1,5 +1,11 @@
+var categoriesLoaded = false;
+
 function changeTab(_id, _e){
 
+    if (!categoriesLoaded){
+        engine.trigger('CVRAppTaskRefreshCategories');
+    }
+    
     if(_e.className.includes('active')){
 
         switch(_id){
@@ -12,6 +18,7 @@ function changeTab(_id, _e){
             case 'worlds':
                     if(worldList.length == 0){
                         loadFilteredWorlds();
+                        //refreshWorlds();
                     }
                     closeWorldDetail();
                     closeInstanceDetail();
@@ -27,6 +34,9 @@ function changeTab(_id, _e){
                 if(propList.length == 0){
                     refreshProps();
                 }
+                break;
+            case 'messages':
+                engine.trigger('CVRAppActionRefreshInvites');
                 break;
         }
 
@@ -70,6 +80,9 @@ function changeTab(_id, _e){
             if(avatarList.length == 0){
                 refreshProps();
             }
+            break;
+        case 'messages':
+            engine.trigger('CVRAppActionRefreshInvites');
             break;
     }
 }
@@ -228,6 +241,7 @@ function filterContent(_ident, _filter){
                 //renderWorlds(list);
                 worldFilter = _filter;
                 loadFilteredWorlds();
+                //renderWorlds(list);
             break;
         case 'friends':
                 var list = filterList(friendList, _filter);
@@ -237,18 +251,8 @@ function filterContent(_ident, _filter){
 }
 
 //Avatars
-function loadAvatars(_list, _filter){
+function loadAvatars(_list){
     avatarList = _list;
-
-    var html = '';
-
-    for(var i=0; _filter[i]; i++){
-        html += '<div class="filter-option data-filter-'+_filter[i].CategoryKey+
-                '" onclick="filterContent(\'avatars\', \''+
-                _filter[i].CategoryKey+'\');">'+_filter[i].CategoryClearTextName+'</div>';
-    }
-
-    document.querySelector('#avatars .filter-content').innerHTML = html;
 
     renderAvatars(_list);
 }
@@ -256,43 +260,59 @@ function loadAvatars(_list, _filter){
 function renderAvatars(_list){
     var contentList = document.querySelector('#avatars .list-content');
 
-    var html = '';
+    var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
-        if(i%4 === 0){
-            if(i !== 0){
-                html += '</div>';
-            }
-            html += '<div class="content-row">';
-        }
 
-        html += '<div class="content-cell avatar"><div class="content-cell-formatter"></div>'+
+        html += '<div data-id="'+_list[i].AvatarId+'" class="content-cell avatar"><div class="content-cell-formatter"></div>'+
                 '<div class="content-cell-content"><img class="content-image" src="'+
                 _list[i].AvatarImageUrl+'"><div class="content-name">'+
-                _list[i].AvatarName+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_list[i].Guid+'\');">Details</div>'+
-                '<div class="content-btn second" onclick="changeAvatar(\''+_list[i].Guid+'\');">Change Avatar</div></div></div>';
+                _list[i].AvatarName.makeSafe()+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_list[i].AvatarId+'\');">Details</div>'+
+                '<div class="content-btn second" onclick="changeAvatar(\''+_list[i].AvatarId+'\');">Change Avatar</div></div></div>';
     }
 
+    html += '</div>';
+    
     contentList.innerHTML = html;
 }
 
+function AddAvatar(_avatar){
+    var html = '<div data-id="'+_avatar.AvatarId+'" class="content-cell avatar"><div class="content-cell-formatter"></div>'+
+        '<div class="content-cell-content"><img class="content-image" src="'+
+        _avatar.AvatarImageUrl+'"><div class="content-name">'+
+        _avatar.AvatarName.makeSafe()+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_avatar.AvatarId+'\');">Details</div>'+
+        '<div class="content-btn second" onclick="changeAvatar(\''+_avatar.AvatarId+'\');">Change Avatar</div></div></div>';
+
+    cvr('#avatars .list-content .flex-list').addHTML(html);
+}
+
+function UpdateAvatar(_avatar){
+    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"] .content-image').attr('src', _avatar.AvatarImageUrl);
+    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"] .content-name').innerHTML(_avatar.UserName.makeSafe());
+}
+
+function RemoveAvatar(_avatar){
+    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"]').remove();
+}
+
+engine.on('AddAvatar', function(_avatar){
+    AddAvatar(_avatar);
+});
+
+engine.on('UpdateAvatar', function(_avatar){
+    UpdateAvatar(_avatar);
+});
+
+engine.on('RemoveAvatar', function(_avatar){
+    RemoveAvatar(_avatar);
+});
+
 //Worlds
-var worldFilter = "";
+var worldFilter = 'wrldactive';
 var worldsResetLoad = true;
 
-function loadWorlds(_list, _filter){
+function loadWorlds(_list){
     worldList = _list;
-
-    var html = '';
-
-    for(var i=0; _filter[i]; i++){
-        if((i == 0 && worldsResetLoad) || worldFilter == '')worldFilter = _filter[i].CategoryKey;
-        html += '<div class="filter-option data-filter-'+_filter[i].CategoryKey+
-                ' '+(_filter[i].CategoryKey == worldFilter?'active':'')+'" onclick="filterContent(\'worlds\', \''+
-                _filter[i].CategoryKey+'\');">'+_filter[i].CategoryClearTextName+'</div>';
-    }
-
-    document.querySelector('#worlds .filter-content').innerHTML = html;
 
     renderWorlds(_list);
 
@@ -302,71 +322,185 @@ function loadWorlds(_list, _filter){
 function renderWorlds(_list){
     var contentList = document.querySelector('#worlds .list-content');
 
-    var html = '';
+    var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
-        if(i%4 === 0){
-            if(i !== 0){
-                html += '</div>';
-            }
-            html += '<div class="content-row">';
-        }
 
-        html += '<div class="content-cell world"><div class="content-cell-formatter"></div>'+
+        html += '<div data-id="'+_list[i].WorldId+'" class="content-cell world"><div class="content-cell-formatter"></div>'+
                 '<div class="content-cell-content"><img class="content-image" src="'+
                 _list[i].WorldImageUrl+'"><div class="content-name">'+
-                _list[i].WorldName+'</div>'+
-                '<div  onclick="getWorldDetails(\''+_list[i].Guid+'\');" class="content-btn second">Details</div>'+
+                _list[i].WorldName.makeSafe()+'</div>'+
+                '<div  onclick="getWorldDetails(\''+_list[i].WorldId+'\');" class="content-btn second">Details</div>'+
                 '</div></div>';
     }
+
+    html+= '</div>';
 
     contentList.innerHTML = html;
 }
 
+function AddWorld(_world){
+    var html = '<div data-id="'+_world.WorldId+'" class="content-cell world"><div class="content-cell-formatter"></div>'+
+        '<div class="content-cell-content"><img class="content-image" src="'+
+        _world.WorldImageUrl+'"><div class="content-name">'+
+        _world.WorldName.makeSafe()+'</div>'+
+        '<div  onclick="getWorldDetails(\''+_world.WorldId+'\');" class="content-btn second">Details</div>'+
+        '</div></div>';
+
+    cvr('#worlds .list-content .flex-list').addHTML(html);
+}
+
+function UpdateWorld(_world){
+    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"] .content-image').attr('src', _world.WorldImageUrl);
+    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"] .content-name').innerHTML(_world.WorldName.makeSafe());
+}
+
+function RemoveWorld(_world){
+    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"]').remove();
+}
+
+engine.on('AddWorld', function(_world){
+    AddWorld(_world);
+});
+
+engine.on('UpdateWorld', function(_world){
+    UpdateWorld(_world);
+});
+
+engine.on('RemoveWorld', function(_world){
+    RemoveWorld(_world);
+});
+
 //Friends
-function loadFriends(_list, _filter){
+function loadFriends(_list){
     friendList = _list;
-    friendList.sort(function(a, b){
-        return a.PlayerName.toLowerCase().localeCompare(b.PlayerName.toLowerCase());
-    });
-
-    var html = '';
-
-    for(var i=0; _filter[i]; i++){
-        html += '<div class="filter-option data-filter-'+_filter[i].CategoryKey+
-                '" onclick="filterContent(\'friends\', \''+
-                _filter[i].CategoryKey+'\');">'+_filter[i].CategoryClearTextName+'</div>';
+    
+    for (var i=0; i < friendList.length; i++){
+        friendList[i].FilterTags += ','+(friendList[i].UserIsOnline?'frndonline':'frndoffline');
     }
-
-    document.querySelector('#friends .filter-content').innerHTML = html;
-
+    
     renderFriends(_list);
 }
 
 function renderFriends(_list){
     var contentList = document.querySelector('#friends .list-content');
 
-    var html = '';
+    var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
-        if(i%5 === 0){
-            if(i !== 0){
-                html += '</div>';
-            }
-            html += '<div class="content-row">';
-        }
 
-        html += '<div class="content-cell friend"><div class="content-cell-formatter"></div>'+
-                '<div class="content-cell-content"><div class="online-state '+(_list[i].OnlineState?'online':'offline')+'"></div>'+
+        html += '<div data-id="'+_list[i].UserId+'" class="content-cell friend"><div class="content-cell-formatter"></div>'+
+                '<div class="content-cell-content"><div class="online-state '+(_list[i].UserIsOnline?'online':'offline')+' '+_list[i].FilterTags+'"></div>'+
                 '<img class="content-image" src="'+
-                _list[i].ProfileImageUrl+'"><div class="content-name">'+
-                _list[i].PlayerName+'</div><div class="content-btn second" '+
-                'onclick="getUserDetails(\''+_list[i].Guid+'\');">Details</div>'+
+                _list[i].UserImageUrl+'"><div class="content-name">'+
+                _list[i].UserName.makeSafe()+'</div><div class="content-btn second" '+
+                'onclick="getUserDetails(\''+_list[i].UserId+'\');">Details</div>'+
                 '</div></div>';
     }
 
+    html+= '</div>';
+    
     contentList.innerHTML = html;
 }
+
+function AddFriend(_friend){
+    var html = '<div data-id="'+_friend.UserId+'" class="content-cell friend"><div class="content-cell-formatter"></div>'+
+        '<div class="content-cell-content"><div class="online-state '+(_friend.UserIsOnline?'online':'offline')+' '+_friend.FilterTags+'"></div>'+
+        '<img class="content-image" src="'+
+        _friend.UserImageUrl+'"><div class="content-name">'+
+        _friend.UserName.makeSafe()+'</div><div class="content-btn second" '+
+        'onclick="getUserDetails(\''+_friend.UserId+'\');">Details</div>'+
+        '</div></div>';
+    
+    cvr('#friends .list-content .flex-list').addHTML(html);
+}
+
+function UpdateFriend(_friend){
+    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .online-state').className('online-state '+(_friend.UserIsOnline?'online':'offline')+' '+_friend.FilterTags);
+    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .content-image').attr('src', _friend.UserImageUrl);
+    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .content-name').innerHTML(_friend.UserName.makeSafe());
+}
+
+function RemoveFriend(_friend){
+    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"]').remove();
+}
+
+engine.on('AddFriend', function(_friend){
+    AddFriend(_friend);
+});
+
+engine.on('UpdateFriend', function(_friend){
+    UpdateFriend(_friend);
+});
+
+engine.on('RemoveFriend', function(_friend){
+    RemoveFriend(_friend);
+});
+
+//Categories
+engine.on('LoadCategories', function(_categories){
+    RenderCategories(_categories);
+    categoriesLoaded = true;
+});
+
+var categories = [];
+categories[0] = [];
+categories[1] = [];
+categories[2] = [];
+categories[3] = [];
+categories[4] = [];
+categories[500] = [];
+
+function RenderCategories(_categories){
+    for (var i=0; i < _categories.length; i++){
+        var category = _categories[i];
+        categories[category.CategoryParent.value__][category.CategoryKey] = category;
+    }
+    
+    var html = '';
+    for (var i in categories[0]){
+        html += '<div class="filter-option data-filter-'+categories[0][i].CategoryKey+
+            '" onclick="filterContent(\'friends\', \''+
+            categories[0][i].CategoryKey+'\');">'+categories[0][i].CategoryClearTextName.makeSafe()+'</div>';
+    }
+    document.querySelector('#friends .filter-content').innerHTML = html;
+
+    html = '';
+    for (var i in categories[1]){
+        html += '<div class="filter-option data-filter-'+categories[1][i].CategoryKey+
+            '" onclick="filterContent(\'groups\', \''+
+            categories[1][i].CategoryKey+'\');">'+categories[1][i].CategoryClearTextName.makeSafe()+'</div>';
+    }
+    //document.querySelector('#groups .filter-content').innerHTML = html;
+
+    html = '';
+    for (var i in categories[2]){
+        html += '<div class="filter-option data-filter-'+categories[2][i].CategoryKey+
+            '" onclick="filterContent(\'worlds\', \''+
+            categories[2][i].CategoryKey+'\');">'+categories[2][i].CategoryClearTextName.makeSafe()+'</div>';
+    }
+    document.querySelector('#worlds .filter-content').innerHTML = html;
+    
+    html = '';
+    for (var i in categories[3]){
+        html += '<div class="filter-option data-filter-'+categories[3][i].CategoryKey+
+            '" onclick="filterContent(\'avatars\', \''+
+            categories[3][i].CategoryKey+'\');">'+categories[3][i].CategoryClearTextName.makeSafe()+'</div>';
+        if (categories[3][i].CategoryKey.length >= 50){
+            window.avatarCategories.push(categories[3][i]);
+        }
+    }
+    document.querySelector('#avatars .filter-content').innerHTML = html;
+
+    html = '';
+    for (var i in categories[4]){
+        html += '<div class="filter-option data-filter-'+categories[4][i].CategoryKey+
+            '" onclick="filterContent(\'props\', \''+
+            categories[4][i].CategoryKey+'\');">'+categories[4][i].CategoryClearTextName.makeSafe()+'</div>';
+    }
+    document.querySelector('#props .filter-content').innerHTML = html;
+}
+
 
 //SearchResults
 function filterSearch(_category){
@@ -427,7 +561,7 @@ function displaySearch(_users, _avatars, _worlds){
             '<div class="content-cell-content">'+
             '<img class="content-image" src="'+
             _users[i].ProfileImageUrl+'"><div class="content-name">'+
-            _users[i].PlayerName+'</div><div class="content-btn second" '+
+            _users[i].PlayerName.makeSafe()+'</div><div class="content-btn second" '+
             'onclick="getUserDetails(\''+_users[i].Guid+'\');">Details</div>'+
             '</div></div>';
     }
@@ -449,7 +583,7 @@ function displaySearch(_users, _avatars, _worlds){
         avatarHtml += '<div class="content-cell avatar"><div class="content-cell-formatter"></div>'+
             '<div class="content-cell-content"><img class="content-image" src="'+
             _avatars[i].AvatarImageUrl+'"><div class="content-name">'+
-            _avatars[i].AvatarName+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_avatars[i].Guid+'\');">Details</div>'+
+            _avatars[i].AvatarName.makeSafe()+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_avatars[i].Guid+'\');">Details</div>'+
             '<div class="content-btn second" onclick="changeAvatar(\''+_avatars[i].Guid+'\');">Change Avatar</div></div></div>';
     }
 
@@ -470,13 +604,96 @@ function displaySearch(_users, _avatars, _worlds){
         worldHtml += '<div class="content-cell world"><div class="content-cell-formatter"></div>'+
             '<div class="content-cell-content"><img class="content-image" src="'+
             _worlds[i].WorldImageUrl+'"><div class="content-name">'+
-            _worlds[i].WorldName+'</div>'+
+            _worlds[i].WorldName.makeSafe()+'</div>'+
             '<div  onclick="getWorldDetails(\''+_worlds[i].Guid+'\');" class="content-btn second">Details</div>'+
             '</div></div>';
     }
 
     worldWrapper.innerHTML = worldHtml;
 }
+
+//Invites
+engine.on('LoadInvites', function(_list){
+    renderInvites(_list);
+});
+
+function renderInvites(_list){
+    var html = '';
+
+    for(var i=0; _list[i]; i++){
+
+        html += '<div class="message-content message-invite" data-id="'+_list[i].InviteMeshId+'">'+
+            '        <img src="'+_list[i].WorldImageUrl+'" class="message-image">'+
+            '        <div class="message-text-wrapper">'+
+            '            <div class="message-name">'+_list[i].SenderUsername.makeSafe()+' invited you to join their session<br>'+_list[i].InstanceName.makeSafe()+'</div>'+
+            '            <div class="message-text"></div>'+
+            '        </div>'+
+            '        <div class="message-btn" onclick="showInstanceDetails(\''+_list[i].InstanceMeshId+'\')">'+
+            '            <img src="gfx/details.svg">'+
+            '            Details</div>'+
+            '        <div class="message-btn" onclick="respondeInvite(\''+_list[i].InviteMeshId+'\', \'accept\')">'+
+            '            <img src="gfx/accept.svg">'+
+            '            Accept</div>'+
+            '        <div class="message-btn" onclick="respondeInvite(\''+_list[i].InviteMeshId+'\', \'deny\')">'+
+            '            <img src="gfx/deny.svg">'+
+            '            Deny</div>'+
+            '        <div class="message-btn" onclick="respondeInvite(\''+_list[i].InviteMeshId+'\', \'silence\')">'+
+            '            <img src="gfx/silence.svg">'+
+            '            Silence</div>'+
+            '    </div>';
+    }
+
+    html+= '';
+
+    document.querySelector('#message-invites .message-list').innerHTML = html;
+    document.querySelector('.messages-invites > .filter-number').innerHTML = _list.length;
+}
+
+function AddInvite(_invite){
+    
+    var html = '<div class="message-content message-invite" data-id="'+_invite.InviteMeshId+'">'+
+        '        <img src="'+_invite.WorldImageUrl+'" class="message-image">'+
+        '        <div class="message-text-wrapper">'+
+        '            <div class="message-name">'+_invite.SenderUsername.makeSafe()+' invited you to join their session<br>'+_invite.InstanceName.makeSafe()+'</div>'+
+        '            <div class="message-text"></div>'+
+        '        </div>'+
+        '        <div class="message-btn" onclick="showInstanceDetails(\''+_invite.InstanceMeshId+'\')">'+
+        '            <img src="gfx/details.svg">'+
+        '            Details</div>'+
+        '        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'accept\')">'+
+        '            <img src="gfx/accept.svg">'+
+        '            Accept</div>'+
+        '        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'deny\')">'+
+        '            <img src="gfx/deny.svg">'+
+        '            Deny</div>'+
+        '        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'silence\')">'+
+        '            <img src="gfx/silence.svg">'+
+        '            Silence</div>'+
+        '    </div>';
+
+    cvr('#message-invites .message-list').addHTML(html);
+    document.querySelector('.messages-invites > .filter-number').innerHTML = cvr('#message-invites .message-list .message-invite').length;
+}
+
+function UpdateInvite(_invite){
+    //NOP
+}
+
+function RemoveInvite(_invite){
+    cvr('#invites .list-content .flex-list [data-id="'+_invite.InviteMeshId+'"]').remove();
+}
+
+engine.on('AddInvite', function(_invite){
+    AddInvite(_invite);
+});
+
+engine.on('UpdateInvite', function(_invite){
+    UpdateInvite(_invite);
+});
+
+engine.on('RemoveInvite', function(_invite){
+    RemoveInvite(_invite);
+});
 
 //Settings
 function switchSettingCategorie(_id, _e){
@@ -612,32 +829,32 @@ function loadMessages(_invites, _friendrequests, _votes, _systems, _dms){
 }
 
 function displayMessageInvite(_invite){
-    return '<div class="message-content message-invite">'+
+    return '<div class="message-content message-invite" id="notification_invite_'+_invite.InviteId+'">'+
 '        <img src="'+_invite.WorldImageUrl+'" class="message-image">'+
 '        <div class="message-text-wrapper">'+
-'            <div class="message-name">'+_invite.SenderUsername+' invited you to join thier session<br>'+_invite.InviteMessage+'</div>'+
+'            <div class="message-name">'+_invite.SenderUsername.makeSafe()+' invited you to join their session<br>'+_invite.InstanceName.makeSafe()+'</div>'+
 '            <div class="message-text"></div>'+
 '        </div>'+
-'        <div class="message-btn" onclick="showInstanceDetails(\''+_invite.InstanceId+'\')">'+
+'        <div class="message-btn" onclick="showInstanceDetails(\''+_invite.InstanceName+'\')">'+
 '            <img src="gfx/details.svg">'+
 '            Details</div>'+
-'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteId+'\', \'accept\')">'+
+'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'accept\')">'+
 '            <img src="gfx/accept.svg">'+
 '            Accept</div>'+
-'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteId+'\', \'deny\')">'+
+'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'deny\')">'+
 '            <img src="gfx/deny.svg">'+
 '            Deny</div>'+
-'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteId+'\', \'silence\')">'+
+'        <div class="message-btn" onclick="respondeInvite(\''+_invite.InviteMeshId+'\', \'silence\')">'+
 '            <img src="gfx/silence.svg">'+
 '            Silence</div>'+
 '    </div>';
 }
 
 function displayMessageInviteRequest(_request){
-    return '<div class="message-content message-invite">'+
+    return '<div class="message-content message-invite" id="notification_invite_request_'+_invite.InviteId+'">'+
         '        <img src="'+_invite.WorldImageUrl+'" class="message-image">'+
         '        <div class="message-text-wrapper">'+
-        '            <div class="message-name">'+_invite.RequestMessage+'</div>'+
+        '            <div class="message-name">'+_invite.RequestMessage.makeSafe()+'</div>'+
         '            <div class="message-text"></div>'+
         '        </div>'+
         '        <div class="message-btn" onclick="respondeInviteRequest(\''+_invite.InviteId+'\', \'accept\')">'+
@@ -661,10 +878,10 @@ function respondeInviteRequest(_guid, _response){
 }
 
 function displayMessageFriendRequest(_friendrequest){
-    return '<div class="message-content message-friendrequest">'+
+    return '<div class="message-content message-friendrequest" id="notification_friend_request_'+_friendrequest.SenderId+'">'+
 '        <img src="'+_friendrequest.SenderImageUrl+'" class="message-image">'+
 '        <div class="message-text-wrapper">'+
-'            <div class="message-name">'+_friendrequest.SenderUsername+' sent you a friend request</div>'+
+'            <div class="message-name">'+_friendrequest.SenderUsername.makeSafe()+' sent you a friend request</div>'+
 '            <div class="message-text"></div>'+
 '        </div>'+
 '        <div class="message-btn" onclick="getUserDetails(\''+_friendrequest.SenderId+'\');">'+
@@ -703,8 +920,8 @@ function displayMessageSystem(_system){
     return '<div class="message-content message-system">'+
 '        <img src="gfx/home.svg" class="message-image">'+
 '        <div class="message-text-wrapper">'+
-'            <div class="message-name">'+_system.HeaderText+'</div>'+
-'            <div class="message-text">'+_system.LongText+'</div>'+
+'            <div class="message-name">'+_system.HeaderText.makeSafe()+'</div>'+
+'            <div class="message-text">'+_system.LongText.makeSafe()+'</div>'+
 '        </div>'+
 '        <div class="message-btn" onclick="respondeSystem(\'\', true)">'+
 '            <img src="gfx/accept.svg">'+
@@ -769,24 +986,50 @@ function loadMessagesSingle(_cat, _list){
             }
             document.querySelector('#message-invite-requests .message-list').innerHTML = html;
             document.querySelector('.messages-invite-requests > .filter-number').innerHTML = _list.length;
-            break;   
+            break;
+        case 'system-notifications':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                //html += displayMessageInvite(_list[i]);
+            }
+            if(_list.length == 0){
+                html = '<div class="noMessagesWrapper">'+
+                    '            <div class="noMessagesInfo">'+
+                    '                <img src="gfx\\attention.svg">'+
+                    '                <div>'+
+                    '                    No System Notifications found.'+
+                    '                </div>'+
+                    '            </div>'+
+                    '        </div>';
+            }
+            document.querySelector('#message-system .message-list').innerHTML = html;
+            document.querySelector('.messages-system > .filter-number').innerHTML = _list.length;
+            break;
+        case 'friend-requests':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                html += displayMessageFriendRequest(_list[i]);
+            }
+            if(_list.length == 0){
+                html = '<div class="noMessagesWrapper">'+
+                    '            <div class="noMessagesInfo">'+
+                    '                <img src="gfx\\attention.svg">'+
+                    '                <div>'+
+                    '                    No Friend Request found.'+
+                    '                </div>'+
+                    '            </div>'+
+                    '        </div>';
+            }
+            document.querySelector('#message-friendrequests .message-list').innerHTML = html;
+            document.querySelector('.message-friendrequests > .filter-number').innerHTML = _list.length;
+            break;
     }
 }
 
 var propList = [];
 //Props
-function loadProps(_list, _filter){
+function loadProps(_list){
     propList = _list;
-
-    var html = '';
-
-    for(var i=0; _filter[i]; i++){
-        html += '<div class="filter-option data-filter-'+_filter[i].CategoryKey+
-            '" onclick="filterContent(\'props\', \''+
-            _filter[i].CategoryKey+'\');">'+_filter[i].CategoryClearTextName+'</div>';
-    }
-
-    document.querySelector('#props .filter-content').innerHTML = html;
 
     renderProps(_list);
 }
@@ -794,26 +1037,54 @@ function loadProps(_list, _filter){
 function renderProps(_list){
     var contentList = document.querySelector('#props .list-content');
 
-    var html = '';
+    var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
-        if(i%4 === 0){
-            if(i !== 0){
-                html += '</div>';
-            }
-            html += '<div class="content-row">';
-        }
 
-        html += '<div class="content-cell prop"><div class="content-cell-formatter"></div>'+
+        html += '<div data-id="'+_list[i].SpawnableId+'" class="content-cell prop"><div class="content-cell-formatter"></div>'+
             '<div class="content-cell-content"><img class="content-image" src="'+
             _list[i].SpawnableImageUrl+'"><div class="content-name">'+
-            _list[i].SpawnableName+'</div><div class="content-btn first disabled zero">Details</div>'+
-            '<div class="content-btn first" onclick="SelectProp(\''+_list[i].Guid+'\', \''+_list[i].SpawnableImageUrl+'\', \''+_list[i].SpawnableName+'\');">Select Prop</div>'+
-            '<div class="content-btn second" onclick="SpawnProp(\''+_list[i].Guid+'\');">Drop Prop</div></div></div>';
+            _list[i].SpawnableName.makeSafe()+'</div><div class="content-btn first disabled zero">Details</div>'+
+            '<div class="content-btn first" onclick="SelectProp(\''+_list[i].SpawnableId+'\', \''+_list[i].SpawnableImageUrl+'\', \''+_list[i].SpawnableName.makeParameterSafe()+'\');">Select Prop</div>'+
+            '<div class="content-btn second" onclick="SpawnProp(\''+_list[i].SpawnableId+'\');">Drop Prop</div></div></div>';
     }
 
+    html += '</div>';
+    
     contentList.innerHTML = html;
 }
+
+function AddProp(_prop){
+    var html = '<div data-id="'+_prop.SpawnableId+'" class="content-cell prop"><div class="content-cell-formatter"></div>'+
+        '<div class="content-cell-content"><img class="content-image" src="'+
+        _prop.SpawnableImageUrl+'"><div class="content-name">'+
+        _prop.SpawnableName.makeSafe()+'</div><div class="content-btn first disabled zero">Details</div>'+
+        '<div class="content-btn first" onclick="SelectProp(\''+_prop.SpawnableId+'\', \''+_prop.SpawnableImageUrl+'\', \''+_prop.SpawnableName.makeParameterSafe()+'\');">Select Prop</div>'+
+        '<div class="content-btn second" onclick="SpawnProp(\''+_prop.SpawnableId+'\');">Drop Prop</div></div></div>';
+
+    cvr('#props .list-content .flex-list').addHTML(html);
+}
+
+function UpdateProp(_prop){
+    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"] .content-image').attr('src', _prop.SpawnableImageUrl);
+    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"] .content-name').innerHTML(_prop.SpawnableName.makeSafe());
+}
+
+function RemoveProp(_prop){
+    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"]').remove();
+}
+
+engine.on('AddProp', function(_prop){
+    AddProp(_prop);
+});
+
+engine.on('UpdateProp', function(_prop){
+    UpdateProp(_prop);
+});
+
+engine.on('RemoveProp', function(_prop){
+    RemoveProp(_prop);
+});
 
 function SpawnProp(_uid){
     engine.call('CVRAppCallSpawnProp', _uid);
@@ -845,46 +1116,29 @@ function getWorldDetails(_uid){
 
 var currentWorldDetails = {};
 
-function loadWorldDetails(_data, _instances, _authorWorlds){
+function loadWorldDetails(_data, _instances){
     currentWorldDetails = _data;
     var detailPage = document.getElementById('world-detail');
 
-    document.querySelector('#world-detail h1').innerHTML = 'World: '+_data.WorldName;
-    document.querySelector('.data-worldName').innerHTML = _data.WorldName;
-    document.querySelector('.data-description').innerHTML = _data.WorldDescription;
-    document.querySelector('.data-adminTags').innerHTML = _data.AdminTags.replace(/,/g, ' ');
-    document.querySelector('.data-safetyTags').innerHTML = _data.SafetyTags.replace(/,/g, ' ');
+    document.querySelector('#world-detail h1').innerHTML = 'World: '+_data.WorldName.makeSafe();
+    document.querySelector('.data-worldName').innerHTML = _data.WorldName.makeSafe();
+    document.querySelector('.data-description').innerHTML = _data.WorldDescription.makeSafe();
+    document.querySelector('.data-adminTags').innerHTML = _data.AdminTags.replace(/,/g, ' ').makeSafe();
+    document.querySelector('.data-safetyTags').innerHTML = _data.SafetyTags.replace(/,/g, ' ').makeSafe();
     document.querySelector('.data-fileSize').innerHTML = _data.WorldSize;
     document.querySelector('.data-uploaded').innerHTML = _data.UploadedAt;
     document.querySelector('.data-updated').innerHTML = _data.UpdatedAt;
 
     document.querySelector('.data-worldImage').src = _data.WorldImageUrl;
-    document.querySelector('.data-worldPreload').setAttribute('onclick', 'preloadWorld(\''+_data.Guid+'\');');
+    document.querySelector('.data-worldPreload').setAttribute('onclick', 'preloadWorld(\''+_data.WorldId+'\');');
 
-    document.querySelector('.data-worldExplore').setAttribute('onclick', 'changeWorld(\''+_data.Guid+'\');');
+    document.querySelector('.data-worldExplore').setAttribute('onclick', 'changeWorld(\''+_data.WorldId+'\');');
 
-    document.querySelector('.data-worldSetHome').setAttribute('onclick', 'setHome(\''+_data.Guid+'\');');
+    document.querySelector('.data-worldSetHome').setAttribute('onclick', 'setHome(\''+_data.WorldId+'\');');
 
     document.querySelector('.data-worldAuthorImage').src = _data.AuthorImageUrl;
-    document.querySelector('.data-authorName').innerHTML = _data.AuthorName;
-    document.querySelector('.action-btn.data-author-profile').setAttribute('onclick', 'getUserDetails(\''+_data.AuthorGuid+'\');');
-
-    var html = '';
-
-    for(var i=0; i < _authorWorlds.length; i++){
-        html += '<div class="row-wrapper world-authorWorld">'+
-                '    <img src="'+_authorWorlds[i].WorldImageUrl+'">'+
-                '    <div class="cell-value">'+_authorWorlds[i].WorldName+
-                '    <div class="action-btn author-world-btn" onclick="getWorldDetails(\''+
-                _authorWorlds[i].Guid+'\');">Details</div>'+'</div>'+
-                '</div>';
-    }
-
-    if(_authorWorlds.length == 0){
-        html = '<div class="author-worlds-empty-message">There are currently no other public worlds from this Author</div>';
-    }
-
-    document.querySelector('.data-worldAuthorWorlds').innerHTML = html;
+    document.querySelector('.data-authorName').innerHTML = _data.AuthorName.makeSafe();
+    document.querySelector('.action-btn.data-author-profile').setAttribute('onclick', 'getUserDetails(\''+_data.AuthorId+'\');');
 
     var html = '';
 
@@ -901,7 +1155,7 @@ function loadWorldDetails(_data, _instances, _authorWorlds){
     detailPage.classList.remove('hidden');
     detailPage.classList.add('in');
 
-    document.querySelector('#world-instance-create .btn-create').setAttribute('onclick', 'instancingCreateInstance(\''+_data.Guid+'\');');
+    document.querySelector('#world-instance-create .btn-create').setAttribute('onclick', 'instancingCreateInstance(\''+_data.WorldId+'\');');
     hideCreateInstance();
 }
 
@@ -938,11 +1192,11 @@ function addWorldDetailInstance(_instance){
 }
 
 function generateInstanceHTML(_instance, _new){
-    return '<div class="world-instance '+(_new === true?'new':'')+'" onclick="showInstanceDetails(\''+_instance.Guid+'\');">'+
+    return '<div class="world-instance '+(_new === true?'new':'')+'" onclick="showInstanceDetails(\''+_instance.InstanceId+'\');">'+
                 '    <div style="background-image: url('+currentWorldDetails.WorldImageUrl+');" class="instance-image"></div>'+
                 '    <div class="playerCount">'+_instance.CurrentPlayerCount+'</div>'+
                 '    <div class="instanceRegion">'+_instance.InstanceRegion+'</div>'+
-                '    <div class="instanceName">'+_instance.InstanceName+'</div>'+
+                '    <div class="instanceName">'+_instance.InstanceName.makeSafe()+'</div>'+
                 '</div>';
 }
 
@@ -1031,35 +1285,35 @@ function showInstanceDetails(_uid){
     engine.call('CVRAppCallGetInstanceDetails', _uid);
 }
 
-engine.on('LoadInstanceDetails', function (_owner, _world, _instance, _instanceUsers) {
-    loadInstanceDetail(_owner, _world, _instance, _instanceUsers);
+engine.on('LoadInstanceDetails', function (_instance) {
+    loadInstanceDetail(_instance);
 });
 
-function loadInstanceDetail(_owner, _world, _instance, _instanceUsers){
+function loadInstanceDetail(_instance){
     var detailPage = document.getElementById('instance-detail');
     closeAvatarSettings();
     
-    document.querySelector('#instance-detail h1').innerHTML = "Instance: "+_instance.InstanceName;
+    document.querySelector('#instance-detail h1').innerHTML = "Instance: "+_instance.InstanceName.makeSafe();
 
-    document.querySelector('#instance-detail .profile-image').src = _owner.PlayerImageUrl;
-    document.querySelector('#instance-detail .content-instance-owner h2').innerHTML = _owner.PlayerName;
-    document.querySelector('#instance-detail .content-instance-owner h3').innerHTML = _owner.PlayerRank;
+    document.querySelector('#instance-detail .profile-image').src = _instance.Owner.UserImageUrl;
+    document.querySelector('#instance-detail .content-instance-owner h2').innerHTML = _instance.Owner.UserName.makeSafe();
+    document.querySelector('#instance-detail .content-instance-owner h3').innerHTML = _instance.Owner.UserRank;
 
-    document.querySelector('#instance-detail .profile-badge img').src = _owner.FeaturedBadgeImageUrl;
-    document.querySelector('#instance-detail .profile-badge p').innerHTML = _owner.FeaturedBadgeName;
+    document.querySelector('#instance-detail .profile-badge img').src = _instance.Owner.FeaturedBadgeImageUrl;
+    document.querySelector('#instance-detail .profile-badge p').innerHTML = _instance.Owner.FeaturedBadgeName;
 
-    document.querySelector('#instance-detail .profile-group img').src = _owner.FeaturedGroupImageUrl;
-    document.querySelector('#instance-detail .profile-group p').innerHTML = _owner.FeaturedGroupName;
+    document.querySelector('#instance-detail .profile-group img').src = _instance.Owner.FeaturedGroupImageUrl;
+    document.querySelector('#instance-detail .profile-group p').innerHTML = _instance.Owner.FeaturedGroupName.makeSafe();
 
-    document.querySelector('#instance-detail .profile-avatar img').src = _owner.CurrentAvatarImageUrl;
-    document.querySelector('#instance-detail .profile-avatar p').innerHTML = _owner.CurrentAvatarName;
+    document.querySelector('#instance-detail .profile-avatar img').src = _instance.Owner.CurrentAvatarImageUrl;
+    document.querySelector('#instance-detail .profile-avatar p').innerHTML = _instance.Owner.CurrentAvatarName.makeSafe();
 
 
-    document.querySelector('#instance-detail .world-image').src = _world.WorldImageUrl;
-    document.querySelector('#instance-detail .content-instance-world h2').innerHTML = _world.WorldName;
-    document.querySelector('#instance-detail .content-instance-world p').innerHTML = 'by '+_world.AuthorName;
+    document.querySelector('#instance-detail .world-image').src = _instance.World.WorldImageUrl;
+    document.querySelector('#instance-detail .content-instance-world h2').innerHTML = _instance.World.WorldName.makeSafe();
+    document.querySelector('#instance-detail .content-instance-world p').innerHTML = 'by '+_instance.World.AuthorName.makeSafe();
     document.querySelector('#instance-detail .content-instance-world p').setAttribute(
-        'onclick', 'getUserDetails(\''+_world.AuthorGuid+'\');');
+        'onclick', 'getUserDetails(\''+_instance.World.AuthorId+'\');');
 
 
     document.querySelector('#instance-detail .data-type').innerHTML = _instance.Privacy;
@@ -1070,17 +1324,17 @@ function loadInstanceDetail(_owner, _world, _instance, _instanceUsers){
 
 
     document.querySelector('#instance-detail .instance-btn.joinBtn').
-        setAttribute('onclick', 'joinInstance(\''+_instance.InstanceId+'\');');
+        setAttribute('onclick', 'joinInstance(\''+_instance.InstanceId+'\', \''+_instance.World.WorldId+'\');');
     document.querySelector('#instance-detail .instance-btn.portalBtn').
         setAttribute('onclick', 'dropInstancePortal(\''+_instance.InstanceId+'\');');
 
 
     var html = '';
 
-    for(var i=0; i < _instanceUsers.length; i++){
-        html += '<div class="instancePlayer" onclick="getUserDetails(\''+_instanceUsers[i].UserId+'\');"><img class="instancePlayerImage" src="'+
-            _instanceUsers[i].UserImageUrl+'"><div class="instancePlayerName">'+
-            _instanceUsers[i].UserName+'</div></div>';
+    for(var i=0; i < _instance.Users.length; i++){
+        html += '<div class="instancePlayer" onclick="getUserDetails(\''+_instance.Users[i].UserId+'\');"><img class="instancePlayerImage" src="'+
+            _instance.Users[i].UserImageUrl+'"><div class="instancePlayerName">'+
+            _instance.Users[i].UserName.makeSafe()+'</div></div>';
     }
 
     document.querySelector('#instance-detail .content-instance-players .scroll-content').innerHTML = html;
@@ -1092,21 +1346,6 @@ function loadInstanceDetail(_owner, _world, _instance, _instanceUsers){
 //User Details
 function getUserDetails(_uid){
     engine.call('CVRAppCallGetUserDetails', _uid);
-    if(debug){
-        loadUserDetails(
-            {Guid: 'AAAA', OnlineState: false,  PlayerImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', PlayerName: 'Testuser',
-             IsFriend: true, IsBlocked: false, IsMuted: false},
-            {WorldImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', WorldName: 'Testworld', GameMode: 'Social', MaxPlayer: 64,
-             CurrentPlayer: 4, IsInPrivateLobby: false},
-            [{Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'},
-             {Guid: 'AAAA', OnlineState: true,  UserImageUrl: 'https://abis3.fra1.digitaloceanspaces.com/ProfilePictures/Khodrin.png', UserName: 'Testuser'}]
-        );
-    }
 }
 
 var PlayerData = {};
@@ -1115,43 +1354,44 @@ var userProfileMute;
 var userProfileVolume;
 var userProfilePlayerAvatarsBlocked;
 var userProfileAvatarBlocked;
+var userProfilePropBlocked;
 
-function loadUserDetails(_data, _activity, _instanceUsers, _profile){
+function loadUserDetails(_data, _profile){
     PlayerData = _data;
     var detailPage = document.getElementById('user-detail');
 
-    document.querySelector('#user-detail h1').innerHTML = 'Profile: '+_data.PlayerName;
+    document.querySelector('#user-detail h1').innerHTML = 'Profile: '+_data.UserName.makeSafe();
 
     document.querySelector('#user-detail .online-state').className = 'online-state '+(_data.OnlineState?'online':'offline');
-    document.querySelector('#user-detail .profile-image').src = _data.PlayerImageUrl;
-    document.querySelector('#user-detail .user-sidebar h2').innerHTML = _data.PlayerName;
-    document.querySelector('#user-detail .user-sidebar h3').innerHTML = _data.PlayerRank;
+    document.querySelector('#user-detail .profile-image').src = _data.UserImageUrl;
+    document.querySelector('#user-detail .user-sidebar h2').innerHTML = _data.UserName.makeSafe();
+    document.querySelector('#user-detail .user-sidebar h3').innerHTML = _data.UserRank;
 
     document.querySelector('#user-detail .profile-badge img').src = _data.FeaturedBadgeImageUrl;
     document.querySelector('#user-detail .profile-badge p').innerHTML = _data.FeaturedBadgeName;
 
     document.querySelector('#user-detail .profile-group img').src = _data.FeaturedGroupImageUrl;
-    document.querySelector('#user-detail .profile-group p').innerHTML = _data.FeaturedGroupName;
+    document.querySelector('#user-detail .profile-group p').innerHTML = _data.FeaturedGroupName.makeSafe();
 
     document.querySelector('#user-detail .profile-avatar img').src = _data.CurrentAvatarImageUrl;
-    document.querySelector('#user-detail .profile-avatar p').innerHTML = _data.CurrentAvatarName;
-    document.querySelector('#user-detail .profile-avatar img').setAttribute('onclick', 'GetAvatarDetails(\''+_data.CurrentAvatarGuid+'\');');
+    document.querySelector('#user-detail .profile-avatar p').innerHTML = _data.CurrentAvatarName.makeSafe();
+    document.querySelector('#user-detail .profile-avatar img').setAttribute('onclick', 'GetAvatarDetails(\''+_data.CurrentAvatarId+'\');');
 
     var friendBtn = document.querySelector('#user-detail .friend-btn');
     if(_data.IsFriend){
-        friendBtn.setAttribute('onclick', 'unFriend(\''+_data.Guid+'\');');
+        friendBtn.setAttribute('onclick', 'unFriend(\''+_data.UserId+'\');');
         friendBtn.innerHTML = '<img src="gfx/unfriend.svg">Unfriend';
     }else{
-        friendBtn.setAttribute('onclick', 'addFriend(\''+_data.Guid+'\');');
+        friendBtn.setAttribute('onclick', 'addFriend(\''+_data.UserId+'\');');
         friendBtn.innerHTML = '<img src="gfx/friend.svg">Add Friend';
     }
 
     var blockBtn = document.querySelector('#user-detail .block-btn');
     if(_data.IsBlocked){
-        blockBtn.setAttribute('onclick', 'unBlock(\''+_data.Guid+'\');');
+        blockBtn.setAttribute('onclick', 'unBlock(\''+_data.UserId+'\');');
         blockBtn.innerHTML = '<img src="gfx/unblock.svg">Unblock';
     }else{
-        blockBtn.setAttribute('onclick', 'block(\''+_data.Guid+'\');');
+        blockBtn.setAttribute('onclick', 'block(\''+_data.UserId+'\');');
         blockBtn.innerHTML = '<img src="gfx/block.svg">Block';
     }
 
@@ -1165,25 +1405,11 @@ function loadUserDetails(_data, _activity, _instanceUsers, _profile){
     }*/
 
     var kickBtn = document.querySelector('#user-detail .kick-btn');
-    kickBtn.setAttribute('onmousedown', 'kickUser(\''+_data.Guid+'\');');
+    kickBtn.setAttribute('onmousedown', 'kickUser(\''+_data.UserId+'\');');
 
     var moderationView = document.querySelector('#user-detail .user-settings-dialog');
     
     var userSettingsTools = '<p>User Settings</p><div class="action-btn" onclick="hideUserSettings();">Back</div>';
-    userSettingsTools += '<div class="row-wrapper">\n' +
-        '                            <div class="option-caption">Mute Player:</div>\n' +
-        '                            <div class="option-input">\n' +
-        '                                <div id="SelfModerationMute" class="inp_toggle" data-current="' + (_profile.mute?'True':'False') + 
-                                        '" data-saveOnChange="true"></div>\n' +
-        '                            </div>\n' +
-        '                        </div>';
-
-    userSettingsTools += '<div class="row-wrapper">\n' +
-        '                            <div class="option-caption">Voice Volume:</div>\n' +
-        '                            <div class="option-input">\n' +
-        '                              <div id="SelfModerationVolume" class="inp_slider" data-min="0" data-max="100" data-current="' + (_profile.voiceVolume * 100) + '" data-saveOnChange="true" data-continuousUpdate="true"></div>\n' +
-        '                            </div>\n' +
-        '                        </div>';
 
     userSettingsTools += '<div class="row-wrapper">\n' +
         '                            <div class="option-caption">Players Avatar:</div>\n' +
@@ -1199,19 +1425,45 @@ function loadUserDetails(_data, _activity, _instanceUsers, _profile){
         '                            </div>\n' +
         '                        </div>'
 
+    userSettingsTools += '<div class="row-wrapper">\n' +
+        '                            <div class="option-caption">Player Props:</div>\n' +
+        '                            <div class="option-input">\n' +
+        '                                <div id="SelfModerationUsersProps" class="inp_dropdown" data-options="0:Hide,1:Use content filter,2:Show" data-current="' + (_profile.userPropVisibility) + '" data-saveOnChange="true"></div>\n' +
+        '                            </div>\n' +
+        '                        </div>'
+
+    userSettingsTools += '<div class="row-wrapper">\n' +
+        '                            <div class="option-caption">Mute Player:</div>\n' +
+        '                            <div class="option-input">\n' +
+        '                                <div id="SelfModerationMute" class="inp_toggle" data-current="' + (_profile.mute?'True':'False') + '" data-saveOnChange="true"></div>\n' +
+        '                            </div>\n' +
+        '                        </div>';
+
+    userSettingsTools += '<div class="row-wrapper">\n' +
+        '                            <div class="option-caption">Voice Volume:</div>\n' +
+        '                            <div class="option-input">\n' +
+        '                              <div id="SelfModerationVolume" class="inp_slider" data-min="0" data-max="100" data-current="' + (_profile.voiceVolume * 100) + '" data-saveOnChange="true" data-continuousUpdate="true"></div>\n' +
+        '                            </div>\n' +
+        '                        </div>';
+
+    userSettingsTools += '<div class="row-wrapper">\n' +
+        '                            <div class="content-btn" onclick="ReloadAvatar(\'' + _data.CurrentAvatarId + '\');">Reload Avatar</div>\n' +
+        '                        </div>'
+
     moderationView.innerHTML = userSettingsTools;
 
     userProfileMute = new inp_toggle(document.getElementById('SelfModerationMute'));
     userProfileVolume = new inp_slider(document.getElementById('SelfModerationVolume'));
     userProfilePlayerAvatarsBlocked = new inp_dropdown(document.getElementById('SelfModerationUsersAvatars'));
     userProfileAvatarBlocked = new inp_dropdown(document.getElementById('SelfModerationAvatar'));
+    userProfilePropBlocked = new inp_dropdown(document.getElementById('SelfModerationUsersProps'));
 
     moderationView.classList.add('hidden');
     
     detailPage.classList.remove('hidden');
     detailPage.classList.add('in');
 
-    updateUserDetailsActivity(_activity, _instanceUsers);
+    updateUserDetailsActivity(_data.Instance, _data.Users);
 }
 
 function showUserSettings(){
@@ -1228,6 +1480,10 @@ function hideUserSettings(){
         moderationView.classList.add('hidden');
         moderationView.classList.remove('out');
     }, 200);
+}
+
+function ReloadAvatar(_userId){
+    engine.call('CVRAppCallReloadAvatar', _userId);
 }
 
 function unFriend(_guid){
@@ -1263,16 +1519,14 @@ function resetKickTimer(){
 }
 function kickUserAction(){
     engine.call('CVRAppCallKickUser', kickGuid);
-    console.log("Kick executed");
 }
 
 function updateUserDetailsActivity(_activity, _instanceUsers){
-
-    if(_activity.IsInPrivateLobby == false && PlayerData.IsFriend && PlayerData.OnlineState && !PlayerData.OnlineNotConnected) {
+    if(_activity.IsInJoinableInstance == true && PlayerData.IsFriend && PlayerData.OnlineState) {
 
         document.querySelector('#tab-content-activity .player-instance-world-image').src = _activity.WorldImageUrl;
-        document.querySelector('#tab-content-activity .player-instance-details h2').innerHTML = _activity.WorldName;
-        document.querySelector('#tab-content-activity .player-instance-details .data-gamemode').innerHTML = _activity.GameMode;
+        document.querySelector('#tab-content-activity .player-instance-details h2').innerHTML = _activity.WorldName.makeSafe();
+        document.querySelector('#tab-content-activity .player-instance-details .data-gamemode').innerHTML = _activity.GameModeName.makeSafe();
         document.querySelector('#tab-content-activity .player-instance-details .data-maxplayers').innerHTML = _activity.MaxPlayer;
         document.querySelector('#tab-content-activity .player-instance-details .data-currplayers').innerHTML = _activity.CurrentPlayer;
 
@@ -1281,7 +1535,7 @@ function updateUserDetailsActivity(_activity, _instanceUsers){
         for (var i = 0; i < _instanceUsers.length; i++) {
             html += '<div class="instancePlayer" onclick="getUserDetails(\''+_instanceUsers[i].UserId+'\');"><img class="instancePlayerImage" src="' +
                 _instanceUsers[i].UserImageUrl + '"><div class="instancePlayerName">' +
-                _instanceUsers[i].UserName + '</div></div>';
+                _instanceUsers[i].UserName.makeSafe() + '</div></div>';
         }
 
         document.querySelector('#tab-content-activity .player-instance-players .scroll-content').innerHTML = html;
@@ -1291,12 +1545,12 @@ function updateUserDetailsActivity(_activity, _instanceUsers){
         document.querySelector('#tab-content-activity .activityDataPrivate').className = 'activityDataPrivate hidden';
         document.querySelector('#tab-content-activity .activityDataOffline').className = 'activityDataOffline hidden';
 
-    }else if(_activity.IsInPrivateLobby == false && PlayerData.IsFriend && PlayerData.OnlineState && PlayerData.OnlineNotConnected){
+    }else if(_activity.IsInJoinableInstance == true && PlayerData.IsFriend && PlayerData.OnlineState){
         document.querySelector('#tab-content-activity .activityDataAvailable').className = 'activityDataAvailable hidden';
         document.querySelector('#tab-content-activity .activityDataUnavailable').className = 'activityDataUnavailable hidden';
         document.querySelector('#tab-content-activity .activityDataPrivate').className = 'activityDataPrivate hidden';
         document.querySelector('#tab-content-activity .activityDataOffline').className = 'activityDataOffline';
-    }else if(_activity.IsInPrivateLobby == true && PlayerData.OnlineState){
+    }else if(_activity.IsInJoinableInstance == false && PlayerData.OnlineState){
         document.querySelector('#tab-content-activity .activityDataAvailable').className = 'activityDataAvailable hidden';
         document.querySelector('#tab-content-activity .activityDataUnavailable').className = 'activityDataUnavailable hidden';
         document.querySelector('#tab-content-activity .activityDataPrivate').className = 'activityDataPrivate';
@@ -1311,22 +1565,22 @@ function updateUserDetailsActivity(_activity, _instanceUsers){
     var joinBtn = document.querySelector('#user-detail .join-btn');
     var inviteBtn = document.querySelector('#user-detail .invite-btn');
 
-    if(PlayerData.OnlineState && PlayerData.IsFriend && !PlayerData.OnlineNotConnected){
+    if(PlayerData.OnlineState && _activity.IsInJoinableInstance){
         if(_activity.InstanceId !== null){
-            joinBtn.setAttribute('onclick', 'joinInstance(\''+_activity.InstanceId+'\');');
+            joinBtn.setAttribute('onclick', 'joinInstance(\''+_activity.InstanceId+'\', \''+_activity.WorldId+'\');');
             joinBtn.classList.remove('disabled');
         }else{
             joinBtn.setAttribute('onclick', '');
             joinBtn.classList.add('disabled');
         }
 
-        inviteBtn.setAttribute('onclick', 'invitePlayer(\''+PlayerData.Guid+'\');');
+        inviteBtn.setAttribute('onclick', 'invitePlayer(\''+PlayerData.UserId+'\');');
         inviteBtn.classList.remove('disabled');
     }else if(PlayerData.IsFriend) {
         joinBtn.setAttribute('onclick', '');
         joinBtn.classList.add('disabled');
 
-        inviteBtn.setAttribute('onclick', 'invitePlayer(\''+PlayerData.Guid+'\');');
+        inviteBtn.setAttribute('onclick', 'invitePlayer(\''+PlayerData.UserId+'\');');
         inviteBtn.classList.remove('disabled');
     }else{
         joinBtn.setAttribute('onclick', '');
@@ -1348,34 +1602,33 @@ function closeUserDetail(){
 }
 
 //Avatar Details
-engine.on('LoadAvatarDetails', function(_AvatarDetails, _avatarCategories, _isMine){
-    displayAvatarDetails(_AvatarDetails, _avatarCategories, _isMine);
+engine.on('LoadAvatarDetails', function(_AvatarDetails){
+    displayAvatarDetails(_AvatarDetails);
 });
 
 window.avatarCategories = [];
 window.avatarCurrentCategories = [];
 
-function displayAvatarDetails(_AvatarDetails, _avatarCategories, _isMine){
-    window.avatarCategories = _avatarCategories;
+function displayAvatarDetails(_AvatarDetails){
     window.avatarCurrentCategories = _AvatarDetails.FilterTags.split(',');
     var detailPage = document.getElementById('avatar-detail');
     
-    cvr('#avatar-detail h1').innerHTML(_AvatarDetails.AvatarName);
+    cvr('#avatar-detail h1').innerHTML(_AvatarDetails.AvatarName.makeSafe());
     cvr('#avatar-detail .avatar-image').attr('src', _AvatarDetails.AvatarImageUrl);
     
-    cvr('#avatar-detail .author').innerHTML(_AvatarDetails.AuthorName);
+    cvr('#avatar-detail .author').innerHTML(_AvatarDetails.AuthorName.makeSafe());
 
     cvr('#avatar-detail .privacy span').innerHTML(_AvatarDetails.IsPublic?'Public':'Private');
     cvr('#avatar-detail .uploaded span').innerHTML(_AvatarDetails.UploadedAt);
     cvr('#avatar-detail .updated span').innerHTML(_AvatarDetails.UpdatedAt);
-    cvr('#avatar-detail .size span').innerHTML(_AvatarDetails.AvatarSize);
+    cvr('#avatar-detail .size span').innerHTML(_AvatarDetails.FileSize);
     
-    cvr('#avatar-detail .description').innerHTML(_AvatarDetails.AvatarDescription);
-    cvr('#avatar-detail .tags').innerHTML(_AvatarDetails.SafetyTags.replace(/,/g, ' '));
+    cvr('#avatar-detail .description').innerHTML(_AvatarDetails.AvatarDesc.makeSafe());
+    cvr('#avatar-detail .tags').innerHTML(_AvatarDetails.Tags.replace(/,/g, ' ').makeSafe());
 
-    if (_AvatarDetails.IsPublic || _AvatarDetails.IsSharedWithMe || _isMine){
-        cvr('#avatar-detail .change-btn').removeClass('disabled').attr('onclick', 'changeAvatar("'+_AvatarDetails.Guid+'");');
-        cvr('#avatar-detail .fav-btn').removeClass('disabled').attr('onclick', 'favoriteAvatar("'+_AvatarDetails.Guid+'");');
+    if (_AvatarDetails.IsPublic || _AvatarDetails.IsSharedWithMe || _AvatarDetails.IsMine){
+        cvr('#avatar-detail .change-btn').removeClass('disabled').attr('onclick', 'changeAvatar("'+_AvatarDetails.AvatarId+'");');
+        cvr('#avatar-detail .fav-btn').removeClass('disabled').attr('onclick', 'favoriteAvatar("'+_AvatarDetails.AvatarId+'");');
     }else{
         cvr('#avatar-detail .change-btn').addClass('disabled').attr('onclick', '');
         cvr('#avatar-detail .fav-btn').addClass('disabled').attr('onclick', '');
@@ -1410,11 +1663,11 @@ function favoriteAvatar(_guid){
         if(window.avatarCurrentCategories.includes(window.avatarCategories[i].CategoryKey)){
             window.pickedAvatarCategories[window.avatarCategories[i].CategoryKey] = true;
             html += '<div class="favorite-category"><div class="inp_toggle checked" onclick="changeAvatarCategory(\''+
-                window.avatarCategories[i].CategoryKey+'\', this);"></div><span>'+window.avatarCategories[i].CategoryClearTextName+'</span></div>';
+                window.avatarCategories[i].CategoryKey+'\', this);"></div><span>'+window.avatarCategories[i].CategoryClearTextName.makeSafe()+'</span></div>';
         }else{
             window.pickedAvatarCategories[window.avatarCategories[i].CategoryKey] = false;
             html += '<div class="favorite-category"><div class="inp_toggle" onclick="changeAvatarCategory(\''+
-                window.avatarCategories[i].CategoryKey+'\', this);"></div><span>'+window.avatarCategories[i].CategoryClearTextName+'</span></div>';
+                window.avatarCategories[i].CategoryKey+'\', this);"></div><span>'+window.avatarCategories[i].CategoryClearTextName.makeSafe()+'</span></div>';
         }
     }
     
@@ -1458,8 +1711,6 @@ function sendAvatarCategoryUpdate(){
             categoryList[categoryList.length] = k;
         }
     }
-    
-    console.log(categoryList.join(','));
     
     engine.call("CVRAppCallUpdateAvatarCategories", window.pickedAvatarForCategorie, categoryList.join(','));
     closeAvatarDetailFavorite();
@@ -1519,8 +1770,8 @@ function uiAlertShow(_headline, _text, _id){
 
     alertBox.setAttribute('data-index', _id);
 
-    document.querySelector('#alert h2').innerHTML = _headline;
-    document.querySelector('#alert p').innerHTML = _text;
+    document.querySelector('#alert h2').innerHTML = _headline.makeSafe();
+    document.querySelector('#alert p').innerHTML = _text.makeSafe();
 }
 
 function uiAlertClose(){
@@ -1580,8 +1831,8 @@ function uiAlertTimedShow(_headline, _text, _time, _id){
 
     alertBox.setAttribute('data-index', _id);
 
-    document.querySelector('#alertTimed h2').innerHTML = _headline;
-    document.querySelector('#alertTimed p').innerHTML = _text;
+    document.querySelector('#alertTimed h2').innerHTML = _headline.makeSafe();
+    document.querySelector('#alertTimed p').innerHTML = _text.makeSafe();
     document.querySelector('#alertTimed .message-time-bar').setAttribute('style', 'width:0;');
 }
 
@@ -1639,7 +1890,7 @@ function uiPushShow(_text, _time, _id){
 
     alertBox.setAttribute('data-index', _id);
 
-    document.querySelector('#push p').innerHTML = _text;
+    document.querySelector('#push p').innerHTML = _text.makeSafe();
 }
 
 function uiPushClose(){
@@ -1665,7 +1916,7 @@ function uiLoadingShow(_text){
     loadingBox.classList.remove('hidden');
     loadingBox.classList.add('in');
 
-    document.querySelector('#loading p').innerHTML = _text;
+    document.querySelector('#loading p').innerHTML = _text.makeSafe();
 }
 
 function uiLoadingClose(){
@@ -1699,10 +1950,10 @@ function uiConfirmShow(_headline, _text, _id, _data){
     alertBox.classList.add('in');
 
     alertBox.setAttribute('data-index', _id);
-    alertBox.setAttribute('data-storage', _data);
+    alertBox.setAttribute('data-storage', _data.makeSafe());
 
-    document.querySelector('#confirm h2').innerHTML = _headline;
-    document.querySelector('#confirm p').innerHTML = _text;
+    document.querySelector('#confirm h2').innerHTML = _headline.makeSafe();
+    document.querySelector('#confirm p').innerHTML = _text.makeSafe();
 }
 
 window.uiConfirm = {
@@ -1782,53 +2033,53 @@ window.setInterval(updateTime, 1000);
 //Quick menu
 function updateAnimationNames(_names){
     var emote1 = document.querySelector('.quick-menu-wrapper .emote-1');
-    if(emote1) emote1.innerHTML = _names.emote1;
+    if(emote1) emote1.innerHTML = _names.emote1.makeSafe();
 
     var emote2 = document.querySelector('.quick-menu-wrapper .emote-2');
-    if(emote2) emote2.innerHTML = _names.emote2;
+    if(emote2) emote2.innerHTML = _names.emote2.makeSafe();
 
     var emote3 = document.querySelector('.quick-menu-wrapper .emote-3');
-    if(emote3) emote3.innerHTML = _names.emote3;
+    if(emote3) emote3.innerHTML = _names.emote3.makeSafe();
 
     var emote4 = document.querySelector('.quick-menu-wrapper .emote-4');
-    if(emote4) emote4.innerHTML = _names.emote4;
+    if(emote4) emote4.innerHTML = _names.emote4.makeSafe();
 
     var emote5 = document.querySelector('.quick-menu-wrapper .emote-5');
-    if(emote5) emote5.innerHTML = _names.emote5;
+    if(emote5) emote5.innerHTML = _names.emote5.makeSafe();
 
     var emote6 = document.querySelector('.quick-menu-wrapper .emote-6');
-    if(emote6) emote6.innerHTML = _names.emote6;
+    if(emote6) emote6.innerHTML = _names.emote6.makeSafe();
 
     var emote7 = document.querySelector('.quick-menu-wrapper .emote-7');
-    if(emote7) emote7.innerHTML = _names.emote7;
+    if(emote7) emote7.innerHTML = _names.emote7.makeSafe();
 
     var emote8 = document.querySelector('.quick-menu-wrapper .emote-8');
-    if(emote8) emote6.innerHTML = _names.emote8;
+    if(emote8) emote6.innerHTML = _names.emote8.makeSafe();
 
 
     var state1 = document.querySelector('.quick-menu-wrapper .state-1');
-    if(state1) state1.innerHTML = _names.state1;
+    if(state1) state1.innerHTML = _names.state1.makeSafe();
 
     var state2 = document.querySelector('.quick-menu-wrapper .state-2');
-    if(state2) state2.innerHTML = _names.state2;
+    if(state2) state2.innerHTML = _names.state2.makeSafe();
 
     var state3 = document.querySelector('.quick-menu-wrapper .state-3');
-    if(state3) state3.innerHTML = _names.state3;
+    if(state3) state3.innerHTML = _names.state3.makeSafe();
 
     var state4 = document.querySelector('.quick-menu-wrapper .state-4');
-    if(state4) state4.innerHTML = _names.state4;
+    if(state4) state4.innerHTML = _names.state4.makeSafe();
 
     var state5 = document.querySelector('.quick-menu-wrapper .state-5');
-    if(state5) state5.innerHTML = _names.state5;
+    if(state5) state5.innerHTML = _names.state5.makeSafe();
 
     var state6 = document.querySelector('.quick-menu-wrapper .state-6');
-    if(state6) state6.innerHTML = _names.state6;
+    if(state6) state6.innerHTML = _names.state6.makeSafe();
 
     var state7 = document.querySelector('.quick-menu-wrapper .state-7');
-    if(state7) state7.innerHTML = _names.state7;
+    if(state7) state7.innerHTML = _names.state7.makeSafe();
 
     var state8 = document.querySelector('.quick-menu-wrapper .state-8');
-    if(state8) state6.innerHTML = _names.state8;
+    if(state8) state6.innerHTML = _names.state8.makeSafe();
 }
 
 //Calls to cohtml
@@ -1842,7 +2093,7 @@ function refreshWorlds(){
 }
 
 function loadFilteredWorlds(){
-    engine.call('CVRAppCallLoadFilteredWorlds', worldFilter, '');
+    engine.call('CVRAppCallLoadFilteredWorlds', worldFilter);
 }
 
 function refreshGameModes(){
@@ -1948,8 +2199,8 @@ function setHome(_uid){
     engine.call('CVRAppCallSetHomeWorld', _uid);
 }
 
-function joinInstance(_uid){
-    engine.call('CVRAppCallJoinInstance', _uid);
+function joinInstance(_uid, _world){
+    engine.call('CVRAppCallJoinInstance', _uid, _world);
 }
 function invitePlayer(_uid){
     engine.call('CVRAppCallInvitePlayer', _uid);
@@ -2025,9 +2276,9 @@ function DisplayAvatarSettings(_list){
         switch(entry.type){
             case 'toggle':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_toggle" data-type="avatar" data-current="'+(entry.defaultValueX==1?'True':'False')+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_toggle" data-type="avatar" data-current="'+(entry.defaultValueX==1?'True':'False')+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
@@ -2040,73 +2291,73 @@ function DisplayAvatarSettings(_list){
                 }
 
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_dropdown" data-type="avatar" data-options="'+settings+'" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_dropdown" data-type="avatar" data-options="'+settings+'" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'colorpicker':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_PREV_'+entry.parameterName+'" class="color-preview" data-r="'+parseInt(entry.defaultValueX * 255)+'" data-g="'+parseInt(entry.defaultValueY * 255)+'" data-b="'+parseInt(entry.defaultValueZ * 255)+'" '  +
+                    '        <div id="AVS_PREV_'+entry.parameterName.makeSafe()+'" class="color-preview" data-r="'+parseInt(entry.defaultValueX * 255)+'" data-g="'+parseInt(entry.defaultValueY * 255)+'" data-b="'+parseInt(entry.defaultValueZ * 255)+'" '  +
                     'style="background-color: rgba('+parseInt(entry.defaultValueX * 255)+','+parseInt(entry.defaultValueY * 255)+','+parseInt(entry.defaultValueZ * 255)+',1);"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-r" class="inp_slider color" data-caption="Red: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueX * 255)+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-g" class="inp_slider color" data-caption="Green: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueY * 255)+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-b" class="inp_slider color" data-caption="Blue: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueZ * 255)+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-r" class="inp_slider color" data-caption="Red: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueX * 255)+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-g" class="inp_slider color" data-caption="Green: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueY * 255)+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-b" class="inp_slider color" data-caption="Blue: " data-type="avatar" data-min="0" data-max="255" data-current="'+(entry.defaultValueZ * 255)+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'slider':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_slider" data-type="avatar" data-min="0" data-max="100" data-current="'+(entry.defaultValueX * 100)+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_slider" data-type="avatar" data-min="0" data-max="100" data-current="'+(entry.defaultValueX * 100)+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'joystick2d':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_joystick" data-type="avatar" data-current="'+entry.defaultValueX+'|'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_joystick" data-type="avatar" data-current="'+entry.defaultValueX+'|'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'joystick3d':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_joystick" data-type="avatar" data-current="'+entry.defaultValueX+'|'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-z" class="inp_sliderH" data-type="avatar" data-min="0" data-max="100" data-current="'+(entry.defaultValueZ * 100)+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_joystick" data-type="avatar" data-current="'+entry.defaultValueX+'|'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-z" class="inp_sliderH" data-type="avatar" data-min="0" data-max="100" data-current="'+(entry.defaultValueZ * 100)+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'inputsingle':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'inputvector2':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-x" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-y" class="inp_number" data-type="avatar" data-caption="Y" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-x" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-y" class="inp_number" data-type="avatar" data-caption="Y" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
             case 'inputvector3':
                 html += '<div class="row-wrapper">\n' +
-                    '    <div class="option-caption">'+entry.name+':</div>\n' +
+                    '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
                     '        <div class="option-input">\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-x" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-y" class="inp_number" data-type="avatar" data-caption="Y" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
-                    '        <div id="AVS_'+entry.parameterName+'-z" class="inp_number" data-type="avatar" data-caption="Z" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueZ+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-x" class="inp_number" data-type="avatar" data-caption="X" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueX+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-y" class="inp_number" data-type="avatar" data-caption="Y" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueY+'" data-saveOnChange="true"></div>\n' +
+                    '        <div id="AVS_'+entry.parameterName.makeSafe()+'-z" class="inp_number" data-type="avatar" data-caption="Z" data-min="-9999" data-max="9999" data-current="'+entry.defaultValueZ+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
                 break;
@@ -2128,37 +2379,37 @@ function DisplayAvatarSettings(_list){
 
         switch(entry.type){
             case 'toggle':
-                new inp_toggle(document.getElementById('AVS_'+entry.parameterName));
+                new inp_toggle(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
                 break;
             case 'dropdown':
-                new inp_dropdown(document.getElementById('AVS_'+entry.parameterName));
+                new inp_dropdown(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
                 break;
             case 'colorpicker':
-                new inp_slider(document.getElementById('AVS_'+entry.parameterName+'-r'));
-                new inp_slider(document.getElementById('AVS_'+entry.parameterName+'-g'));
-                new inp_slider(document.getElementById('AVS_'+entry.parameterName+'-b'));
+                new inp_slider(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-r'));
+                new inp_slider(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-g'));
+                new inp_slider(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-b'));
                 break;
             case 'slider':
-                new inp_slider(document.getElementById('AVS_'+entry.parameterName));
+                new inp_slider(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
                 break;
             case 'joystick2d':
-                new inp_joystick(document.getElementById('AVS_'+entry.parameterName));
+                new inp_joystick(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
                 break;
             case 'joystick3d':
-                new inp_joystick(document.getElementById('AVS_'+entry.parameterName));
-                new inp_sliderH(document.getElementById('AVS_'+entry.parameterName+'-z'));
+                new inp_joystick(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
+                new inp_sliderH(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-z'));
                 break;
             case 'inputsingle':
-                new inp_number(document.getElementById('AVS_'+entry.parameterName));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()));
                 break;
             case 'inputvector2':
-                new inp_number(document.getElementById('AVS_'+entry.parameterName+'-x'));
-                new inp_number(document.getElementById('AVS_'+entry.parameterName+'-y'));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-x'));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-y'));
                 break;
             case 'inputvector3':
-                new inp_number(document.getElementById('AVS_'+entry.parameterName+'-x'));
-                new inp_number(document.getElementById('AVS_'+entry.parameterName+'-y'));
-                new inp_number(document.getElementById('AVS_'+entry.parameterName+'-z'));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-x'));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-y'));
+                new inp_number(document.getElementById('AVS_'+entry.parameterName.makeSafe()+'-z'));
                 break;
         }
     }
@@ -2181,9 +2432,9 @@ function DisplayAvatarSettingsProfiles(_info){
     
     for(var i=0; i < _info.length; i++){
         html += '<div class="advAvtrProfile">\n' +
-            '    <div class="advAvtrProfName" onclick="loadAdvAvtrProfile(\''+_info[i]+'\');">'+_info[i]+'</div>\n' +
-            '    <div class="advAvtrProfSave" onclick="saveAdvAvtrProfile(\''+_info[i]+'\');">S</div>\n' +
-            '    <div class="advAvtrProfDelete" onclick="deleteAdvAvtrProfile(\''+_info[i]+'\');">D</div>\n' +
+            '    <div class="advAvtrProfName" onclick="loadAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">'+_info[i].makeSafe()+'</div>\n' +
+            '    <div class="advAvtrProfSave" onclick="saveAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">S</div>\n' +
+            '    <div class="advAvtrProfDelete" onclick="deleteAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">D</div>\n' +
             '</div>';
     }
     
@@ -2199,16 +2450,16 @@ function loadAdvAvtrProfileDefault(){
     engine.trigger('CVRAppActionLoadAdvAvtrSettingsDefault');
 }
 function saveAdvAvtrProfile(_name){
-    engine.call('CVRAppCallSaveAdvAvtrSettingsProfile', _name);
+    engine.call('CVRAppCallSaveAdvAvtrSettingsProfile', _name.makeSafe());
     uiPushShow("The Profile was saved", 2, 'advAvtrCnfSav');
 }
 function loadAdvAvtrProfile(_name){
-    engine.call('CVRAppCallLoadAdvAvtrSettingsProfile', _name);
+    engine.call('CVRAppCallLoadAdvAvtrSettingsProfile', _name.makeSafe());
 }
 var profileIndex = "";
 function deleteAdvAvtrProfile(_name){
     profileIndex = _name;
-    uiConfirmShow("Advanced Avatar Settings", 'Are you sure you want to delete the profile "'+_name+'"', 'deleteAdvAvtrProfile');
+    uiConfirmShow("Advanced Avatar Settings", 'Are you sure you want to delete the profile "'+_name.makeSafe()+'"', 'deleteAdvAvtrProfile');
 }
 window.addEventListener("uiConfirm", function(e){
     if(window.uiConfirm.id == "deleteAdvAvtrProfile" && window.uiConfirm.value == true){
@@ -2228,16 +2479,16 @@ function vrInputChanged(_fullBodyActive){
 }
 
 //Calls from cohtml
-engine.on('LoadAvatars', function (_list, _filter) {
-    loadAvatars(_list, _filter);
+engine.on('LoadAvatars', function (_list) {
+    loadAvatars(_list);
 });
 
-engine.on('LoadWorlds', function (_list, _filter) {
-    loadWorlds(_list, _filter);
+engine.on('LoadWorlds', function (_list) {
+    loadWorlds(_list);
 });
 
-engine.on('LoadFriends', function (_list, _filter) {
-    loadFriends(_list, _filter);
+engine.on('LoadFriends', function (_list) {
+    loadFriends(_list);
 });
 
 engine.on('LoadMessages', function(_invites, _friendrequests, _votes, _systems, _dms){
@@ -2248,16 +2499,73 @@ engine.on('LoadMessagesSingle', function(_category, _list){
     loadMessagesSingle(_category, _list);
 });
 
-engine.on('LoadWorldDetails', function (_data, _instances, _authorWorlds) {
-    loadWorldDetails(_data, _instances, _authorWorlds);
+/*engine.on('LoadInvites', function(_list){
+    loadMessagesSingle('invites', _list);
+});*/
+
+engine.on('LoadInviteRequests', function(_list){
+    loadMessagesSingle('invite-requets', _list);
+});
+
+engine.on('LoadFriendRequests', function(_list){
+    loadMessagesSingle('friend-requests', _list);
+});
+
+engine.on('AddInvites', function(_invite){
+    addMessagesSingle('invites', [_invite]);
+});
+
+engine.on('AddFriendRequest', function(_friendRequest){
+    addMessagesSingle('friend-requests', [_friendRequest]);
+});
+
+function addMessagesSingle(_cat, _list){
+    switch(_cat){
+        case 'invites':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                html += displayMessageInvite(_list[i]);
+            }
+            document.querySelector('#message-invites .message-list').innerHTML += html;
+            break;
+        case 'invite-requets':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                html += displayMessageInviteRequest(_list[i]);
+            }
+            document.querySelector('#message-invite-requests .message-list').innerHTML += html;
+            break;
+        case 'system-notifications':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                //html += displayMessageInvite(_list[i]);
+            }
+            document.querySelector('#message-system .message-list').innerHTML += html;
+            break;
+        case 'friend-requests':
+            var html = '';
+            for(var i=0; i < _list.length; i++){
+                html += displayMessageFriendRequest(_list[i]);
+            }
+            document.querySelector('#message-friendrequests .message-list').innerHTML += html;
+            break;
+    }
+}
+
+engine.on('LoadSystemNotifications', function(_list){
+    addMessagesSingle('system-notifications', _list);
+});
+
+engine.on('LoadWorldDetails', function (_data, _instances) {
+    loadWorldDetails(_data, _instances);
 });
 
 engine.on('AddWorldDetailsInstance', function(_instance){
     addWorldDetailInstance(_instance);
 });
 
-engine.on('LoadUserDetails', function (_data, _activity, _instanceUsers, _profile) {
-    loadUserDetails(_data, _activity, _instanceUsers, _profile);
+engine.on('LoadUserDetails', function (_data, _profile) {
+    loadUserDetails(_data, _profile);
 });
 
 engine.on('alert', function (_headline, _text, _id) {
@@ -2313,7 +2621,6 @@ engine.on('ChangePathCameraStatus', function (_active) {
 });
 
 engine.on('ChangeGlobalNSFW', function(_enabled){
-    console.log(_enabled);
     var nsfwSettings = document.getElementById('content-filter-nsfw-wrapper');
     var nsfwSettingsAdditional = document.getElementById('content-filter-nsfw-wrapper-second');
     var nsfwSettingsProp = document.getElementById('content-filter-nsfw-wrapper-props');
@@ -2351,9 +2658,9 @@ engine.on('ShowAvatarSettingsProfiles', function(_info){
     DisplayAvatarSettingsProfiles(_info);
 });
 
-engine.on('LoadSpawnables', function (_list, _filter) {
+engine.on('LoadSpawnables', function (_list) {
     //changeTab('props', document.getElementById('props-btn'));
-    loadProps(_list, _filter);
+    loadProps(_list);
 });
 
 engine.on('vrInputChanged', function (_fullBody) {
@@ -2552,6 +2859,7 @@ function inp_dropdown(_obj){
     this.list.className = 'valueList';
     
     this.updateOptions = function(){
+        self.list.innerHTML = "";
         for(var i = 0; i < self.options.length; i++){
             self.optionElements[i] = document.createElement('div');
             self.optionElements[i].className = 'listValue';
@@ -3077,6 +3385,9 @@ function sendFuncKey(_e){
         case 'BACK':
             closeKeyboard();
             break;
+        case 'PASTE':
+            keyboardPasteFromClipboard();
+            break;
     }
 }
 
@@ -3227,7 +3538,7 @@ function endCall(callId){
 engine.on("CallServiceCallIncoming", function(call){
     cvr('.call-profile').addClass('calling').attr('src', call.profimeImageUrl);
     
-    cvr('.call-name').innerHTML(call.username);
+    cvr('.call-name').innerHTML(call.username.makeSafe());
     
     cvr('.call-duration').innerHTML('Incoming Call');
     
@@ -3238,7 +3549,7 @@ engine.on("CallServiceCallIncoming", function(call){
 engine.on("CallServiceCallStarted", function(call){
     cvr('.call-profile').removeClass('calling').attr('src', call.profimeImageUrl);
 
-    cvr('.call-name').innerHTML(call.username);
+    cvr('.call-name').innerHTML(call.username.makeSafe());
     
     cvr('.call-duration').innerHTML('00:00:00');
 
@@ -3265,4 +3576,55 @@ function RemovePlayerAvatars(){
 
 function PanicMute(){
     engine.trigger("CVRAppActionMuteAllChannels");
+}
+
+engine.on("OpenInWorldKeyboard", function(previousValue){
+    var worldInput = document.getElementById('world-ui-input');
+    worldInput.value = previousValue;
+    
+    displayKeyboard(worldInput);
+});
+
+engine.on("updateKeyboardFromClipboard", function(content){
+    var input = document.getElementById('keyoard-input');
+    if(keyboardMaxLength > 0 && input.value.length == keyboardMaxLength) return;
+    input.value += content;
+});
+
+function keyboardPasteFromClipboard(){
+    engine.trigger("CVRAppActionKeyboardPaste");
+}
+
+function sendToWorldUi(){
+    var worldInput = document.getElementById('world-ui-input');
+    
+    engine.call("CVRAppCallSendToWorldUi", worldInput.value);
+}
+
+engine.on("RemoveNotification", function(type, id){
+    var eid = "";
+    switch (type) {
+        case "friendRequest":
+            eid = "notification_friend_request_"+id;
+            break;
+        case "invite":
+            eid = "notification_invite_"+id;
+            break;
+    }
+    var element = document.getElementById(eid);
+    if (element) {
+        element.parentNode.removeChild(element);
+    }
+});
+
+function GenerateSupportCode(){
+    engine.trigger("CVRAppActionGenerateSupportCode");
+}
+
+engine.on("DisplaySupportCode", function(code){
+    cvr('#support-code-display').innerHTML(code).attr("onclick", "CopySupportCode('"+code+"');");
+});
+
+function CopySupportCode(text){
+    engine.call("CVRAppCallCopyToClipboard", text);
 }
