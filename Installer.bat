@@ -21,7 +21,7 @@ For /F %%A In ('
     MsHTA VBScript:Execute("Set o=CreateObject(""Scripting.FileSystemObject""):o.GetStandardStream(1).Write(o.GetFileVersion(""ChilloutVR.exe"")):Close"^)
 ') Do Set "CVR=%%A"
 echo current CVR executable version is %CVR%
-set current=2019.4.13.34615
+set current=2019.4.28.33174
 if %CVR%==%current% (
 goto current
 )
@@ -35,10 +35,8 @@ echo [33m---------------------- Select Custome UI Typ -----------------------[
 :: Selection of UI's
 
 SET choice=
-SET /p choice=Which UI you want to Install?. 1: MilchZockers [M] , 2: Slime's [S] , 3: Neradon's [N]: or 3: Deinstall Custom UI (could delete UI settings) [D]:
+SET /p choice=Which UI you want to Install?. 1: Slime's [S] , 2: Neradon's [N]: or 3: Deinstall Custom UI (could delete UI settings) [D]:
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
-IF '%choice%'=='M' GOTO MilchZockers
-IF '%choice%'=='m' GOTO MilchZockers
 IF '%choice%'=='S' GOTO Slimes
 IF '%choice%'=='s' GOTO Slimes
 IF '%choice%'=='N' GOTO Neradons
@@ -46,21 +44,6 @@ IF '%choice%'=='n' GOTO Neradons
 IF '%choice%'=='D' GOTO Default
 IF '%choice%'=='d' GOTO Default
 IF '%choice%'=='' GOTO no
-)
-:MilchZockers
-echo [33m---------------------- Select UI Version -----------------------[0m
-)
-SET choice=
-SET /p choice=Which Version do you want to Install?. 1: Stable [S] or 2: Experimental [E]:
-IF NOT '%choice%'=='' SET choice=%choice:~0,1%
-IF '%choice%'=='E' GOTO Experimental-MilchZocker
-IF '%choice%'=='e' GOTO Experimental-MilchZocker
-IF '%choice%'=='S' GOTO Stable-MilchZocker
-IF '%choice%'=='s' GOTO Stable-MilchZocker
-IF '%choice%'=='' GOTO no
-)
-pause
-exit
 )
 :Slimes
 echo [33m---------------------- Select UI Version -----------------------[0m
@@ -91,24 +74,6 @@ IF '%choice%'=='s' GOTO Stable-Neradon
 IF '%choice%'=='' GOTO no
 )
 pause
-exit
-)
-:Experimental-MilchZocker
-echo Downloading Experimental UI Installer...
-powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChilloutVR-Dark-UI/Auto-Installers/UiInstallerExperimental.bat -OutFile ChilloutVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat"
-echo:
-start ChilloutVR-Dark-UI-Auto-Installers\UIInstallerExperimental.bat
-SET UI=UiInstallerExperimental
-goto CleanUP
-exit
-)
-:Stable-MilchZocker
-echo Downloading Experimental UI Installer...
-powershell -Command "Invoke-WebRequest https://raw.githubusercontent.com/MilchZocker/ChilloutVR-Dark-UI/Auto-Installers/UiInstallerStable.bat -OutFile ChilloutVR-Dark-UI-Auto-Installers\UiInstallerStable.bat"
-echo:
-start ChilloutVR-Dark-UI-Auto-Installers\UIInstallerStable.bat
-SET UI=UiInstallerStable
-goto CleanUP
 exit
 )
 :Experimental-Slime
