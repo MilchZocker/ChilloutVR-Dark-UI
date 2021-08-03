@@ -84,14 +84,14 @@ del UI.zip
 :: Move Files into DestinationPath.
 )
 echo [33m-------------------- Moving Files.. ---------------------[0m
-ROBOCOPY /E /MOVE "CVRPlus-main" "CVRTest"
+ROBOCOPY /E /MOVE "Dasui-main" "CVRTest"
    )
 :: Cleanup Unused Files.
 )
 echo [33m-------------------- Final Cleanup ---------------------[0m
 del /Q /F 7z.exe
 del /Q /F 7z.dll
-rmdir /Q /S "CVRPlus-main"
+rmdir /Q /S "Dasui-main"
    )
 :: Installation Finished.
 )
