@@ -1,7 +1,11 @@
 var categoriesLoaded = false;
 
+var canChangeTab = true;
+
 function changeTab(_id, _e){
 
+    if (!canChangeTab) return;
+    
     if (!categoriesLoaded){
         engine.trigger('CVRAppTaskRefreshCategories');
     }
@@ -55,6 +59,8 @@ function changeTab(_id, _e){
         content[i].classList.add('out');
     }
     setTimeout(hideTabs, 200);
+    
+    canChangeTab = false;
 
     var target = document.getElementById(_id);
     target.classList.remove('hidden');
@@ -93,6 +99,7 @@ function hideTabs(){
         content[i].classList.add('hidden');
         content[i].classList.remove('out');
     }
+    canChangeTab = true;
 }
 
 function switchTab(_tabs, _contents, _content, _e){
@@ -234,7 +241,7 @@ function filterContent(_ident, _filter){
     switch(_ident){
         case 'avatars':
                 var list = filterList(avatarList, _filter);
-                renderAvatars(list);
+                renderAvatars(list, true);
             break;
         case 'worlds':
                 //var list = filterList(worldList, _filter);
@@ -244,8 +251,9 @@ function filterContent(_ident, _filter){
                 //renderWorlds(list);
             break;
         case 'friends':
-                var list = filterList(friendList, _filter);
-                renderFriends(list);
+                //var list = filterList(friendList, _filter);
+                //renderFriends(list);
+                filterFriendList(_filter);
             break;
     }
 }
@@ -257,10 +265,10 @@ function loadAvatars(_list){
     renderAvatars(_list);
 }
 
-function renderAvatars(_list){
+function renderAvatars(_list, _forceRefresh){
     var contentList = document.querySelector('#avatars .list-content');
 
-    var html = '<div class="flex-list">';
+    /*var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
 
@@ -273,11 +281,23 @@ function renderAvatars(_list){
 
     html += '</div>';
     
-    contentList.innerHTML = html;
+    contentList.innerHTML = html;*/
+    
+    if (_forceRefresh === true) cvr('#avatars .list-content .flex-list').innerHTML('');
+
+    for(var i=0; _list[i]; i++){
+        if (cvr('#avatars .list-content .flex-list #avtr_'+_list[i].AvatarId+'').length == 0){
+            AddAvatar(_list[i]);
+        } else {
+            UpdateAvatar(_list[i]);
+        }
+    }
+    
+    console.log("Render Avatars");
 }
 
 function AddAvatar(_avatar){
-    var html = '<div data-id="'+_avatar.AvatarId+'" class="content-cell avatar"><div class="content-cell-formatter"></div>'+
+    var html = '<div id="avtr_'+_avatar.AvatarId+'" class="content-cell avatar"><div class="content-cell-formatter"></div>'+
         '<div class="content-cell-content"><img class="content-image" src="'+
         _avatar.AvatarImageUrl+'"><div class="content-name">'+
         _avatar.AvatarName.makeSafe()+'</div><div class="content-btn first" onclick="GetAvatarDetails(\''+_avatar.AvatarId+'\');">Details</div>'+
@@ -287,12 +307,14 @@ function AddAvatar(_avatar){
 }
 
 function UpdateAvatar(_avatar){
-    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"] .content-image').attr('src', _avatar.AvatarImageUrl);
-    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"] .content-name').innerHTML(_avatar.UserName.makeSafe());
+    cvr('#avatars .list-content .flex-list #avtr_'+_avatar.AvatarId+' .content-name').innerHTML(_avatar.AvatarName.makeSafe());
+    if (cvr('#avatars .list-content .flex-list #avtr_'+_avatar.AvatarId+' .content-image').first().getAttribute('src') != _avatar.AvatarImageUrl) {
+        cvr('#avatars .list-content .flex-list #avtr_'+_avatar.AvatarId+' .content-image').attr('src', _avatar.AvatarImageUrl);
+    }
 }
 
 function RemoveAvatar(_avatar){
-    cvr('#avatars .list-content .flex-list [data-id="'+_avatar.AvatarId+'"]').remove();
+    cvr('#avatars .list-content .flex-list #avtr_'+_avatar.AvatarId+'').remove();
 }
 
 engine.on('AddAvatar', function(_avatar){
@@ -314,15 +336,15 @@ var worldsResetLoad = true;
 function loadWorlds(_list){
     worldList = _list;
 
-    renderWorlds(_list);
+    renderWorlds(_list, worldsResetLoad);
 
-    worldsResetLoad = false;
+    //worldsResetLoad = false;
 }
 
-function renderWorlds(_list){
+function renderWorlds(_list, _forceRefresh){
     var contentList = document.querySelector('#worlds .list-content');
 
-    var html = '<div class="flex-list">';
+    /*var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
 
@@ -336,11 +358,22 @@ function renderWorlds(_list){
 
     html+= '</div>';
 
-    contentList.innerHTML = html;
+    contentList.innerHTML = html;*/
+
+    if (_forceRefresh === true) cvr('#worlds .list-content .flex-list').innerHTML('');
+    worldsResetLoad = false;
+    
+    for(var i=0; _list[i]; i++){
+        if (cvr('#worlds .list-content .flex-list #wrld_'+_list[i].WorldId+'').length == 0){
+            AddWorld(_list[i]);
+        } else {
+            UpdateWorld(_list[i]);
+        }
+    }
 }
 
 function AddWorld(_world){
-    var html = '<div data-id="'+_world.WorldId+'" class="content-cell world"><div class="content-cell-formatter"></div>'+
+    var html = '<div id="wrld_'+_world.WorldId+'" class="content-cell world"><div class="content-cell-formatter"></div>'+
         '<div class="content-cell-content"><img class="content-image" src="'+
         _world.WorldImageUrl+'"><div class="content-name">'+
         _world.WorldName.makeSafe()+'</div>'+
@@ -351,12 +384,14 @@ function AddWorld(_world){
 }
 
 function UpdateWorld(_world){
-    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"] .content-image').attr('src', _world.WorldImageUrl);
-    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"] .content-name').innerHTML(_world.WorldName.makeSafe());
+    if (cvr('#worlds .list-content .flex-list #wrld_' + _world.WorldId + ' .content-image').first().getAttribute('src') != _world.WorldImageUrl) {
+        cvr('#worlds .list-content .flex-list #wrld_' + _world.WorldId + ' .content-image').attr('src', _world.WorldImageUrl);
+    }
+    cvr('#worlds .list-content .flex-list #wrld_'+_world.WorldId+' .content-name').innerHTML(_world.WorldName.makeSafe());
 }
 
 function RemoveWorld(_world){
-    cvr('#worlds .list-content .flex-list [data-id="'+_world.WorldId+'"]').remove();
+    cvr('#worlds .list-content .flex-list #wrld_'+_world.WorldId+'').remove();
 }
 
 engine.on('AddWorld', function(_world){
@@ -385,26 +420,43 @@ function loadFriends(_list){
 function renderFriends(_list){
     var contentList = document.querySelector('#friends .list-content');
 
-    var html = '<div class="flex-list">';
+    //var html = '<div class="flex-list">';
 
-    for(var i=0; _list[i]; i++){
+    /*for(var i=0; _list[i]; i++){
 
-        html += '<div data-id="'+_list[i].UserId+'" class="content-cell friend"><div class="content-cell-formatter"></div>'+
+        html += '<div id="'+_list[i].UserId+'" class="content-cell friend"><div class="content-cell-formatter"></div>'+
                 '<div class="content-cell-content"><div class="online-state '+(_list[i].UserIsOnline?'online':'offline')+' '+_list[i].FilterTags+'"></div>'+
                 '<img class="content-image" src="'+
                 _list[i].UserImageUrl+'"><div class="content-name">'+
                 _list[i].UserName.makeSafe()+'</div><div class="content-btn second" '+
                 'onclick="getUserDetails(\''+_list[i].UserId+'\');">Details</div>'+
                 '</div></div>';
-    }
+    }*/
 
-    html+= '</div>';
+    //html+= '</div>';
     
-    contentList.innerHTML = html;
+    //contentList.innerHTML = html;
+
+    for(var i=0; _list[i]; i++){
+        if (cvr('#friends .list-content .flex-list #frnd_'+_list[i].UserId+'').length == 0){
+            AddFriend(_list[i]);
+        } else {
+            UpdateFriend(_list[i]);
+        }
+    }
+}
+
+function filterFriendList(_filter){
+    if (_filter == ""){
+        cvr('#friends .list-content .flex-list .friend').show();
+    } else {
+        cvr('#friends .list-content .flex-list .friend').hide();
+        cvr('#friends .list-content .flex-list .friend.'+_filter).show();
+    }
 }
 
 function AddFriend(_friend){
-    var html = '<div data-id="'+_friend.UserId+'" class="content-cell friend"><div class="content-cell-formatter"></div>'+
+    var html = '<div id="frnd_'+_friend.UserId+'" class="content-cell friend '+(_friend.UserIsOnline?'frndonline':'frndoffline')+'"><div class="content-cell-formatter"></div>'+
         '<div class="content-cell-content"><div class="online-state '+(_friend.UserIsOnline?'online':'offline')+' '+_friend.FilterTags+'"></div>'+
         '<img class="content-image" src="'+
         _friend.UserImageUrl+'"><div class="content-name">'+
@@ -416,9 +468,12 @@ function AddFriend(_friend){
 }
 
 function UpdateFriend(_friend){
-    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .online-state').className('online-state '+(_friend.UserIsOnline?'online':'offline')+' '+_friend.FilterTags);
-    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .content-image').attr('src', _friend.UserImageUrl);
-    cvr('#friends .list-content .flex-list [data-id="'+_friend.UserId+'"] .content-name').innerHTML(_friend.UserName.makeSafe());
+    cvr('#friends .list-content .flex-list #frnd_'+_friend.UserId).className('content-cell friend '+(_friend.UserIsOnline?'frndonline':'frndoffline'));
+    cvr('#friends .list-content .flex-list #frnd_'+_friend.UserId+' .online-state').className('online-state '+(_friend.UserIsOnline?'online':'offline')+' '+_friend.FilterTags);
+    if (cvr('#friends .list-content .flex-list #frnd_'+_friend.UserId+' .content-image').first().getAttribute('src') != _friend.UserImageUrl) {
+        cvr('#friends .list-content .flex-list #frnd_' + _friend.UserId + ' .content-image').attr('src', _friend.UserImageUrl);
+    }
+    cvr('#friends .list-content .flex-list #frnd_'+_friend.UserId+' .content-name').innerHTML(_friend.UserName.makeSafe());
 }
 
 function RemoveFriend(_friend){
@@ -1037,7 +1092,7 @@ function loadProps(_list){
 function renderProps(_list){
     var contentList = document.querySelector('#props .list-content');
 
-    var html = '<div class="flex-list">';
+    /*var html = '<div class="flex-list">';
 
     for(var i=0; _list[i]; i++){
 
@@ -1051,11 +1106,19 @@ function renderProps(_list){
 
     html += '</div>';
     
-    contentList.innerHTML = html;
+    contentList.innerHTML = html;*/
+
+    for(var i=0; _list[i]; i++){
+        if (cvr('#props .list-content .flex-list #prp_'+_list[i].SpawnableId+'').length == 0){
+            AddProp(_list[i]);
+        } else {
+            UpdateProp(_list[i]);
+        }
+    }
 }
 
 function AddProp(_prop){
-    var html = '<div data-id="'+_prop.SpawnableId+'" class="content-cell prop"><div class="content-cell-formatter"></div>'+
+    var html = '<div id="prp_'+_prop.SpawnableId+'" class="content-cell prop"><div class="content-cell-formatter"></div>'+
         '<div class="content-cell-content"><img class="content-image" src="'+
         _prop.SpawnableImageUrl+'"><div class="content-name">'+
         _prop.SpawnableName.makeSafe()+'</div><div class="content-btn first disabled zero">Details</div>'+
@@ -1066,12 +1129,14 @@ function AddProp(_prop){
 }
 
 function UpdateProp(_prop){
-    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"] .content-image').attr('src', _prop.SpawnableImageUrl);
-    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"] .content-name').innerHTML(_prop.SpawnableName.makeSafe());
+    if (cvr('#props .list-content .flex-list #prp_' + _prop.SpawnableId + ' .content-image').first().getAttribute('src') != _prop.SpawnableImageUrl) {
+        cvr('#props .list-content .flex-list #prp_' + _prop.SpawnableId + ' .content-image').attr('src', _prop.SpawnableImageUrl);
+    }
+    cvr('#props .list-content .flex-list #prp_'+_prop.SpawnableId+' .content-name').innerHTML(_prop.SpawnableName.makeSafe());
 }
 
 function RemoveProp(_prop){
-    cvr('#props .list-content .flex-list [data-id="'+_prop.SpawnableId+'"]').remove();
+    cvr('#props .list-content .flex-list #prp_'+_prop.SpawnableId+'').remove();
 }
 
 engine.on('AddProp', function(_prop){
@@ -1338,6 +1403,8 @@ function loadInstanceDetail(_instance){
     }
 
     document.querySelector('#instance-detail .content-instance-players .scroll-content').innerHTML = html;
+
+    document.querySelector('#instance-detail .content-instance-players .scroll-content').scrollTop = 0;
     
     detailPage.classList.remove('hidden');
     detailPage.classList.add('in');
@@ -1989,12 +2056,12 @@ function uiConfirmClose(_value){
 window.addEventListener("uiConfirm", function(){    
     switch(window.uiConfirm.id){
         case "logout":
-            if(window.uiConfirm.value) {
+            if(window.uiConfirm.value == 'true') {
                 engine.trigger('CVRAppTaskGameLogout');
             }
             break;
         case "removeFriend":
-            if(window.uiConfirm.value) {
+            if(window.uiConfirm.value == 'true') {
                 engine.call('CVRAppCallRelationsManagement', window.uiConfirm.data, 'Unfriend');
             }
             break;
@@ -2093,6 +2160,7 @@ function refreshWorlds(){
 }
 
 function loadFilteredWorlds(){
+    worldsResetLoad = true;
     engine.call('CVRAppCallLoadFilteredWorlds', worldFilter);
 }
 
@@ -2275,9 +2343,9 @@ function DisplayAvatarSettings(_list){
 
         switch(entry.type){
             case 'toggle':
-                html += '<div class="row-wrapper">\n' +
+            html += '<div class="row-wrapper">\n' +
                     '    <div class="option-caption">'+entry.name.makeSafe()+':</div>\n' +
-                    '        <div class="option-input">\n' +
+                    '    <div class="option-input">\n' +
                     '        <div id="AVS_'+entry.parameterName.makeSafe()+'" class="inp_toggle" data-type="avatar" data-current="'+(entry.defaultValueX==1?'True':'False')+'" data-saveOnChange="true"></div>\n' +
                     '    </div>\n' +
                     '</div>';
@@ -2287,7 +2355,7 @@ function DisplayAvatarSettings(_list){
 
                 for(var j=0; j < entry.optionList.length; j++){
                     if(j != 0) settings += ',';
-                    settings += j+':'+entry.optionList[j];
+                    settings += j+':'+entry.optionList[j].makeParameterSafeFull();
                 }
 
                 html += '<div class="row-wrapper">\n' +
@@ -2432,9 +2500,9 @@ function DisplayAvatarSettingsProfiles(_info){
     
     for(var i=0; i < _info.length; i++){
         html += '<div class="advAvtrProfile">\n' +
-            '    <div class="advAvtrProfName" onclick="loadAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">'+_info[i].makeSafe()+'</div>\n' +
-            '    <div class="advAvtrProfSave" onclick="saveAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">S</div>\n' +
-            '    <div class="advAvtrProfDelete" onclick="deleteAdvAvtrProfile(\''+_info[i].makeSafe()+'\');">D</div>\n' +
+            '    <div class="advAvtrProfName" onclick="loadAdvAvtrProfile(\''+_info[i].makeParameterSafe()+'\');">'+_info[i].makeSafe()+'</div>\n' +
+            '    <div class="advAvtrProfSave" onclick="saveAdvAvtrProfile(\''+_info[i].makeParameterSafe()+'\');">S</div>\n' +
+            '    <div class="advAvtrProfDelete" onclick="deleteAdvAvtrProfile(\''+_info[i].makeParameterSafe()+'\');">D</div>\n' +
             '</div>';
     }
     
@@ -2450,19 +2518,19 @@ function loadAdvAvtrProfileDefault(){
     engine.trigger('CVRAppActionLoadAdvAvtrSettingsDefault');
 }
 function saveAdvAvtrProfile(_name){
-    engine.call('CVRAppCallSaveAdvAvtrSettingsProfile', _name.makeSafe());
+    engine.call('CVRAppCallSaveAdvAvtrSettingsProfile', _name);
     uiPushShow("The Profile was saved", 2, 'advAvtrCnfSav');
 }
 function loadAdvAvtrProfile(_name){
-    engine.call('CVRAppCallLoadAdvAvtrSettingsProfile', _name.makeSafe());
+    engine.call('CVRAppCallLoadAdvAvtrSettingsProfile', _name);
 }
 var profileIndex = "";
 function deleteAdvAvtrProfile(_name){
     profileIndex = _name;
-    uiConfirmShow("Advanced Avatar Settings", 'Are you sure you want to delete the profile "'+_name.makeSafe()+'"', 'deleteAdvAvtrProfile');
+    uiConfirmShow("Advanced Avatar Settings", 'Are you sure you want to delete the profile "'+ _name +'"', 'deleteAdvAvtrProfile', '');
 }
 window.addEventListener("uiConfirm", function(e){
-    if(window.uiConfirm.id == "deleteAdvAvtrProfile" && window.uiConfirm.value == true){
+    if(window.uiConfirm.id == "deleteAdvAvtrProfile" && window.uiConfirm.value == 'true'){
         engine.call('CVRAppCallDeleteAdvAvtrSettingsProfile', profileIndex);
         uiPushShow("The Profile was deleted", 2, 'advAvtrCnfDel');
     }
@@ -3628,3 +3696,7 @@ engine.on("DisplaySupportCode", function(code){
 function CopySupportCode(text){
     engine.call("CVRAppCallCopyToClipboard", text);
 }
+
+engine.on("SwitchCategory", function(tab){
+    changeTab(tab, cvr(".tab_btn_"+tab).first());
+});

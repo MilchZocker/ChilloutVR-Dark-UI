@@ -228,8 +228,15 @@ function escapeHtml(text) {
 function escapeForParameter(text) {
     var map = {
         "'": '\\\'',
+        "\\": '\\\\'
     };
-    return text.replace(/[']/g, function(m) { return map[m]; });
+    return text.replace(/['\\]/g, function(m) { return map[m]; });
+}
+function escapeForParameterFull(text) {
+    var map = {
+        ",": '.'
+    };
+    return text.replace(/[\,]/g, function(m) { return map[m]; });
 }
 Object.defineProperty(String.prototype, "makeSafe", {
     value: function makeSafe() {
@@ -241,6 +248,14 @@ Object.defineProperty(String.prototype, "makeSafe", {
 Object.defineProperty(String.prototype, "makeParameterSafe", {
     value: function makeParameterSafe() {
         return escapeForParameter(this);
+    },
+    writable: true,
+    configurable: true
+});
+Object.defineProperty(String.prototype, "makeParameterSafeFull", {
+    value: function makeParameterSafeFull() {
+        console.log(escapeForParameterFull(escapeForParameter(escapeHtml(this))));
+        return escapeForParameterFull(escapeForParameter(escapeHtml(this)));
     },
     writable: true,
     configurable: true
