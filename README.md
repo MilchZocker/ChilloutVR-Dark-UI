@@ -1,8 +1,6 @@
-# ChillouVR-Dark-UI
+# ChillouVR-
 
 **UI is deprecated for now, but the Installer for other UI's is fully working!**
-
-ALL Right's go to AlphaBlendInteractiv it's there base and i only did minor changes.
 
 Learn more about ABI and CVR here
 
@@ -11,7 +9,7 @@ http://chilloutvr.de/
 https://docs.abinteractive.net/
 
 
-How to Install:
+# How to Install:
 Just place the Installer.bat from the branch into "ChilloutVR\" or at least place it on the same drive as the Game.
 
 Automated Installer:
@@ -19,4 +17,4 @@ Automated Installer:
 
 
 A Project by the "Unofficial CVR Community"
-feel free to join us on Discord: https://discord.gg/yApCk5atsa
+feel free to join us on Discord: https://chilloutvr.eu/
