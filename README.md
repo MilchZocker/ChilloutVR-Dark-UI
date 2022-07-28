@@ -1,4 +1,4 @@
-# ChillouVR-
+# ChilloutVR-
 
 **UI is deprecated for now, but the Installer for other UI's is fully working!**
 
